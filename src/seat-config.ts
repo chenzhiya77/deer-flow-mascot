@@ -1,5 +1,3 @@
-import { solveSeatY } from "./seat-solver";
-
 export type SeatConfig = {
   tx: number;
   rot: number;
@@ -15,5 +13,3 @@ export const SEAT: SeatConfig = {
   sx: 0.9,
   s: 0.45,
 };
-
-export const SEAT_TY = solveSeatY(SEAT);

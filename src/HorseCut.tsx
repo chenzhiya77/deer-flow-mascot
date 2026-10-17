@@ -37,19 +37,17 @@ const inverseTf = (t: Tf | undefined): string | undefined => {
 export type HorsePoseSpec = {
   body: Tf;
   local: Partial<Record<string, Tf>>;
-  detached: Partial<Record<string, Tf>>;
   planted: string[];
 };
 
 const POSES: Record<HorsePose, HorsePoseSpec> = {
-  rest: { body: {}, local: {}, detached: {}, planted: [] },
+  rest: { body: {}, local: {}, planted: [] },
   step: {
     body: { ty: -8, rot: -1 },
     local: {
       leg_2: { rot: 16, org: "50% 0%" },
       leg_0: { rot: -8, org: "50% 0%" },
     },
-    detached: {},
     planted: ["leg_3"],
   },
 };
@@ -87,7 +85,6 @@ export const HorseRig = ({
   readonly spec?: HorsePoseSpec;
 }) => {
   const spec = specProp ?? POSES[pose];
-  const detached = new Set(Object.keys(spec.detached));
   return (
     <>
       <div
@@ -98,7 +95,7 @@ export const HorseRig = ({
           transform: tfString(spec.body),
         }}
       >
-        {ATTACHED.filter((name) => name !== "body" && !detached.has(name)).map((name) =>
+        {ATTACHED.filter((name) => name !== "body").map((name) =>
           spec.planted.includes(name) ? (
             <div
               key={name}
@@ -119,9 +116,6 @@ export const HorseRig = ({
         <Part name="body" tf={spec.local["body"]} />
         {mount}
       </div>
-      {[...detached].map((name) => (
-        <Part key={`detached-${name}`} name={name} tf={spec.detached[name]} />
-      ))}
     </>
   );
 };

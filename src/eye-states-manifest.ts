@@ -2,6 +2,7 @@
 // 对位规则统一「高光对高光」＋同手绘尺度 S=73/295（原眼 2.hya-yanjing.png 的显示缩放）。
 // 命名：用户素材的「左/右」按图侧（zuoyan→eye_0，与 zuojiao→boot_l 同规矩）。
 // 共用件（无语）左右各落一份同名副本、不镜像。
+// 注：file 仅记录原素材文件名（溯源），运行时按 key 拼 parts-user/<key>.png，不读此字段。
 import type { PartDef } from "./parts-user-manifest";
 
 export type EyeState = "normal" | "think" | "wuyu" | "zhuangsha";

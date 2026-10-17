@@ -24,7 +24,6 @@ export const WalkVideo = () => {
             leg_2: { rot: nearSide, org: "50% 0%" },
             leg_3: { rot: farSide, org: "50% 0%" },
           },
-          detached: {},
           planted: [],
         },
         duck: {

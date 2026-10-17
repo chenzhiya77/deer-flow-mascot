@@ -88,7 +88,7 @@ export const MountUp = () => {
     sy = 1 - 0.015 * Math.sin(Math.PI * clamp01((frame - FLY_OUT) / 12));
   }
 
-  const horse: HorsePoseSpec = { body: {}, local: {}, detached: {}, planted: [] };
+  const horse: HorsePoseSpec = { body: {}, local: {}, planted: [] };
 
   const duck: DuckPoseSpec = {
     body: { rot: pose.rot, sy, sx: 1 / sy },

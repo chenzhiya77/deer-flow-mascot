@@ -1,8 +1,11 @@
 {
   "name": "deer-flow-mascot",
   "version": "1.0.0",
-  "description": "My Remotion video",
-  "repository": {},
+  "description": "DeerFlow mascot cutout animations (Remotion): duck / cowboy / horse scenes and stills.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chenzhiya77/deer-flow-mascot.git"
+  },
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
