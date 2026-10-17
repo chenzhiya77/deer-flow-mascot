@@ -27,10 +27,8 @@ const POSES: Record<RidePose, Seat> = {
 export const RidingCut = ({
   pose,
   specs,
-  markAnchor = false,
 }: {
   readonly pose: RidePose;
-  readonly markAnchor?: boolean;
   readonly specs?: {
     horse: import("./HorseCut").HorsePoseSpec;
     duck: import("./CowboyCutUser").DuckPoseSpec;
@@ -69,7 +67,6 @@ export const RidingCut = ({
               spec={specs?.duck}
               layer="near"
               splitAt={BODY_MID}
-              markAnchor={markAnchor}
             />
           </div>
         }

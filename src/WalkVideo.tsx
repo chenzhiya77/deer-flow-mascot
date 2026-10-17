@@ -34,7 +34,6 @@ export const WalkVideo = () => {
             boot_l: { rot: footSwing * FOOT_SWING, org: "50% 0%" },
             boot_r: { rot: -footSwing * FOOT_SWING, org: "50% 0%" },
           },
-          detached: {},
           planted: [],
         },
       }}

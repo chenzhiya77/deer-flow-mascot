@@ -33,7 +33,6 @@ export const DuckWalk = ({ gait = "walk" }: { readonly gait?: Gait }) => {
       hand_0: { rot: -step * cfg.arm, org: "50% 0%" },
       hand_1: { rot: step * cfg.arm, org: "50% 0%" },
     },
-    detached: {},
     planted: [],
   };
   return (

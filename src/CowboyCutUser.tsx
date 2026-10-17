@@ -6,7 +6,7 @@ import { PART_OFFSET, SEAT_ANCHOR_PT } from "./seat-solver";
 
 const PARTS_ALL = { ...PARTS_USER, ...PARTS_EYES };
 
-export type UserPose = "rest" | "wave" | "blink" | "detach";
+export type UserPose = "rest" | "wave" | "blink";
 
 type Tf = {
   tx?: number;
@@ -40,33 +40,20 @@ const inverseTf = (t: Tf | undefined): string | undefined => {
 export type DuckPoseSpec = {
   body: Tf;
   local: Partial<Record<string, Tf>>;
-  detached: Partial<Record<string, Tf>>;
   planted: string[];
 };
 
 const POSES: Record<UserPose, DuckPoseSpec> = {
-  rest: { body: {}, local: {}, detached: {}, planted: [] },
+  rest: { body: {}, local: {}, planted: [] },
   wave: {
     body: { rot: -2 },
     local: { hand_1: { tx: -30, ty: -240, rot: -20, org: "50% 0%" } },
-    detached: {},
     planted: [],
   },
   blink: {
     body: {},
     local: { eye_0: { sy: 0.12 }, eye_1: { sy: 0.12 } },
-    detached: {},
     planted: [],
-  },
-  detach: {
-    body: { rot: 3 },
-    local: {
-      eye_0: { sy: 0.12 },
-      eye_1: { sy: 0.12 },
-      hand_1: { tx: -20, ty: -160, rot: -15, org: "50% 0%" },
-    },
-    detached: { belt: { tx: 260, ty: -140, rot: 28 } },
-    planted: ["boot_l", "boot_r"],
   },
 };
 
@@ -133,22 +120,18 @@ export const DuckRig = ({
   layer = "all",
   splitAt,
   spec: specProp,
-  markAnchor = false,
   eyes = "normal",
 }: {
   readonly pose: UserPose;
   readonly layer?: "all" | "near" | "far";
   readonly splitAt?: number;
   readonly spec?: DuckPoseSpec;
-  readonly markAnchor?: boolean;
   readonly eyes?: EyeState;
 }) => {
   const spec = specProp ?? POSES[pose];
-  const detached = new Set(Object.keys(spec.detached));
   const swap = EYE_SWAP[eyes];
   const resolve = (name: string) => swap[name] ?? name;
   const names = ATTACHED.filter((name) => {
-    if (detached.has(name)) return false;
     if (layer === "all") return true;
     const isSplit = SPLIT_PARTS.has(name);
     if (splitAt !== undefined && isSplit) {
@@ -168,28 +151,6 @@ export const DuckRig = ({
           transform: tfString(spec.body),
         }}
       >
-        {markAnchor ? (
-          <>
-            {[
-              [425, 1128, "blue"],
-              [812, 1128, "red"],
-              [1199, 1128, "green"],
-            ].map(([cx, cy, color]) => (
-              <div
-                key={color}
-                style={{
-                  position: "absolute",
-                  left: (cx as number) + PART_OFFSET.x - 12,
-                  top: (cy as number) + PART_OFFSET.y - 12,
-                  width: 24,
-                  height: 24,
-                  background: color as string,
-                  outline: "2px solid black",
-                }}
-              />
-            ))}
-          </>
-        ) : null}
         {names.map((name) => {
           const rname = resolve(name);
           const p = PARTS_ALL[rname];
@@ -215,11 +176,6 @@ export const DuckRig = ({
           );
         })}
       </div>
-      {layer !== "far"
-        ? [...detached].map((name) => (
-            <Part key={`detached-${name}`} name={resolve(name)} tf={spec.detached[name]} />
-          ))
-        : null}
     </>
   );
 };

@@ -98,7 +98,6 @@ export const MountUp = () => {
       hand_0: { rot: pose.arm, org: "50% 0%" },
       hand_1: { rot: pose.arm, org: "50% 0%" },
     },
-    detached: {},
     planted: [],
   };
 

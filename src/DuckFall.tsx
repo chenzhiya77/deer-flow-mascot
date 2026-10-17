@@ -108,7 +108,6 @@ export const DuckFall = () => {
       hand_0: { rot: arm, org: "50% 0%" },
       hand_1: { rot: arm * 0.9, org: "50% 0%" },
     },
-    detached: {},
     // 触地后脚钉地面（压扁时身向脚压实），空中随身走
     planted: airborne ? [] : ["boot_l", "boot_r"],
   };

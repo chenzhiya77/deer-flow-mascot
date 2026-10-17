@@ -54,7 +54,6 @@ export const DuckJump = () => {
       hand_0: { rot: k.arm, org: "50% 0%" },
       hand_1: { rot: k.arm, org: "50% 0%" },
     },
-    detached: {},
     planted: [],
   };
   return (

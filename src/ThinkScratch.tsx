@@ -19,8 +19,7 @@ const TARGET_Y = 360;
 // f86–96    停＋眨眼
 // f96–116   收手回落（缓入缓出＋轻微回弹）
 // f116–120  站定收尾
-// 眼睛编排走 steps（按原始帧）：默认 [[0,normal],[10,think],[110,normal]]；
-// V2（shift=72）＝[[0,normal],[12,wuyu],[48,zhuangsha],[182,normal]]：正常 0.4s→无语 1.2s→装傻 1.2s→挠头→回正常
+// 眼睛编排走 steps（按原始帧）：V2（shift=72）＝[[0,normal],[12,wuyu],[48,zhuangsha],[182,normal]]：正常 0.4s→无语 1.2s→装傻 1.2s→挠头→回正常
 const SCRATCH = { tx: 152, ty: -387, org: "50% 0%" };
 const BURSTS: ReadonlyArray<readonly [number, number, number]> = [
   [36, 60, 8],
@@ -53,11 +52,7 @@ const rubPhase = (f: number): number => {
   return 0;
 };
 
-const DEFAULT_STEPS: ReadonlyArray<readonly [number, EyeState]> = [
-  [0, "normal"],
-  [10, "think"],
-  [110, "normal"],
-];
+const DEFAULT_STEPS: ReadonlyArray<readonly [number, EyeState]> = [[0, "normal"]];
 
 export const ThinkScratch = ({
   steps,
@@ -130,20 +125,15 @@ export const ThinkScratch = ({
   };
   let blink = f >= 92 && f <= 94 ? 0.12 : 1;
   for (const [sf] of seq.slice(1)) blink = Math.min(blink, swapBlink(sf));
-  // 思考眼慢速游移（双眼同向＝视线），只在思考状态走
-  const gaze = eyes === "think" ? 1 : 0;
-  const gazeX = Math.sin((f / 150) * Math.PI * 2) * 2.5 * gaze;
-  const gazeY = Math.sin((f / 120) * Math.PI * 2) * -2 * gaze;
 
   const spec: DuckPoseSpec = {
     body,
     local: {
-      eye_0: { tx: gazeX, ty: gazeY, sy: blink },
-      eye_1: { tx: gazeX, ty: gazeY, sy: blink },
+      eye_0: { sy: blink },
+      eye_1: { sy: blink },
       hand_0: hand,
       hand_1: { rot: -lean * 0.6, org: "50% 0%" },
     },
-    detached: {},
     planted: ["boot_l", "boot_r"],
   };
 

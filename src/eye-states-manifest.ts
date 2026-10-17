@@ -1,40 +1,11 @@
 // 眼态定位表（表情库）：每条记录 = 件文件 + 在鸭脸上的 x/y/w/h，算一次永久复用。
-// 对位规则统一「高光对高光」＋同手绘尺度 S=73/295（原眼 2.hya-yanjing.png 的显示缩放）。
+// 对位按眼白 / 板框实测，同手绘尺度 S=73/295（原眼 2.hya-yanjing.png 的显示缩放）。
 // 命名：用户素材的「左/右」按图侧（zuoyan→eye_0，与 zuojiao→boot_l 同规矩）。
 // 共用件（无语）左右各落一份同名副本、不镜像。
 // 注：file 仅记录原素材文件名（溯源），运行时按 key 拼 parts-user/<key>.png，不读此字段。
 import type { PartDef } from "./parts-user-manifest";
 
-export type EyeState = "normal" | "think" | "wuyu" | "zhuangsha";
-
-const HL_CANVAS = {
-  eye_0: [599.5, 538.0], // 原眼高光中心（鸭脸画布坐标）
-  eye_1: [1046.0, 538.0],
-};
-
-const S = 73 / 295;
-
-const placed = (
-  key: "eye_0" | "eye_1",
-  file: string,
-  w: number,
-  h: number,
-  hl: [number, number],
-): PartDef => {
-  const c = HL_CANVAS[key];
-  return {
-    file,
-    x: Math.round((c[0] - hl[0] * S) * 10) / 10,
-    y: Math.round((c[1] - hl[1] * S) * 10) / 10,
-    w: Math.round(w * S * 10) / 10,
-    h: Math.round(h * S * 10) / 10,
-  };
-};
-
-const PARTS_THINK: Record<string, PartDef> = {
-  eye_0_think: placed("eye_0", "hya-sikao-zuoyan.png", 634, 247, [128, 59]),
-  eye_1_think: placed("eye_1", "hya-sikao-yanjing.png", 507, 378, [213.5, 71.5]),
-};
+export type EyeState = "normal" | "wuyu" | "zhuangsha";
 
 // 无语（hya-无语-共用，左右同件不镜像；瞳仁质心实测与件同向）。
 // 位置按他给的参考图 无语参考.png 实测对位：参考与源件身体方块同宽（713 vs 714 ⇒ 尺度 1.0），
@@ -57,14 +28,12 @@ const PARTS_ZHUANGSHA: Record<string, PartDef> = {
 };
 
 export const PARTS_EYES: Record<string, PartDef> = {
-  ...PARTS_THINK,
   ...PARTS_WUYU,
   ...PARTS_ZHUANGSHA,
 };
 
 export const EYE_SWAP: Record<EyeState, Record<string, string>> = {
   normal: {},
-  think: { eye_0: "eye_0_think", eye_1: "eye_1_think" },
   wuyu: { eye_0: "eye_0_wuyu", eye_1: "eye_1_wuyu" },
   zhuangsha: { eye_0: "eye_0_zhuangsha", eye_1: "eye_1_zhuangsha" },
 };
