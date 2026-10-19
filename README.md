@@ -1,4 +1,4 @@
-# deer-flow-mascot
+# duck-mascot
 
 「鸭牛仔」吉祥物分件动画（Remotion）。鸭、牛仔鸭、马的手绘分件（PNG）在代码里装配成可渲染的动作场景与静帧，用于 RAG 功能视频。
 
