@@ -26,11 +26,11 @@ npm run lint                                 # eslint + tsc
 | `MountUp` | 90（3s） | 上马：鸭从马后跃出弧线，落点直接取座位求解值 |
 | `ThinkScratchV2` | 192（6.4s） | 挠头思考：蓄力、上抬过冲、两轮挠（节奏渐快），带眼态时间线（无语 → 装傻） |
 
-### 静帧（9 个）
+### 静帧（11 个）
 
 | 组 | Stills | 尺寸 |
 | --- | --- | --- |
-| `CowboyCutUser` | rest / wave / blink / rest+wuyu / rest+zhuangsha | 1856×1280 |
+| `CowboyCutUser` | rest / wave / blink / rest+wuyu / rest+zhuangsha / rest+miyanxiao / rest+hengmiyanxiao | 1856×1280 |
 | `HorseCut` | rest / step | 1856×1280 |
 | `RidingCut` | rest / ride | 1856×1280 |
 
@@ -44,7 +44,7 @@ src/
   RidingCut.tsx            骑乘合成：白底 + 地面阴影 + 马 + 分层坐进去的鸭
   WalkVideo / DuckWalk / DuckJump / DuckFall / MountUp / ThinkScratch   单场景组件
   parts-user-manifest.ts   切件定位表（scripts/align_pieces.py 生成）
-  eye-states-manifest.ts   眼态库：normal / wuyu / zhuangsha
+  eye-states-manifest.ts   眼态库：normal / wuyu / zhuangsha / miyanxiao / hengmiyanxiao
   horse-manifest.ts        马分件定位表（scripts/align_horse.py 生成）
   seat-config.ts / seat-solver.ts / horse-topline.ts      座位求解
 public/
@@ -58,7 +58,7 @@ scripts/                 一次性素材工具（见下）
 - **姿态分层**：每个 pose 分 `body`（整体变换，轴心在座位锚点）、`local`（单件变换）、`planted`（钉地件反向抵消身体变换）。
 - **near/far 分层**：`DuckRig` 按身体中线 `splitAt` 把身/腰带/眼/喙切成前后两半（各让 16px 重叠防旋转透缝）；`RidingCut` 把 far 层压在马身后、near 层盖在马身前，鸭「坐进」马背。
 - **座位求解**（`seat-solver.ts`）：鸭的稳定点（身体底边中点 + 切件平移）沿马背轮廓线 `HORSE_TOPLINE` 取列，反解 `ty` 落在鞍沿。手填 `ty` 必穿模，所以由求解器算。
-- **眼态库**（`eye-states-manifest.ts`）：`EYE_SWAP` 把 normal / wuyu / zhuangsha 映射到左/右眼件；wuyu、zhuangsha 为素材眼，按眼白 / 板框实测落位，一次算好永久复用。
+- **眼态库**（`eye-states-manifest.ts`）：`EYE_SWAP` 把 normal / wuyu / zhuangsha / miyanxiao / hengmiyanxiao 映射到左/右眼件；wuyu、zhuangsha、miyanxiao、hengmiyanxiao 为素材眼，按眼白 / 板框实测落位，一次算好永久复用。
 - **取景定式**：单人鸭场景统一整鸭缩放 0.62、横向居中（`DuckWalk` / `DuckRun` / `DuckJump` / `ThinkScratchV2`）；`DuckFall` 独立取景（0.5）。
 
 ## 素材脚本（一次性）

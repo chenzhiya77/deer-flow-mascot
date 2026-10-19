@@ -96,6 +96,20 @@ export const RemotionRoot: React.FC = () => {
         height={1280}
         defaultProps={{ pose: "rest", eyes: "zhuangsha" }}
       />
+      <Still
+        id="UserMiyanxiao"
+        component={CowboyCutUser}
+        width={1856}
+        height={1280}
+        defaultProps={{ pose: "rest", eyes: "miyanxiao" }}
+      />
+      <Still
+        id="UserHengmiyanxiao"
+        component={CowboyCutUser}
+        width={1856}
+        height={1280}
+        defaultProps={{ pose: "rest", eyes: "hengmiyanxiao" }}
+      />
       <Still id="HorseRest" component={HorseCut} width={1856} height={1280} defaultProps={{ pose: "rest" }} />
       <Still id="HorseStep" component={HorseCut} width={1856} height={1280} defaultProps={{ pose: "step" }} />
       <Still id="RidingRest" component={RidingCut} width={1856} height={1280} defaultProps={{ pose: "rest" }} />

@@ -5,7 +5,7 @@
 // 注：file 仅记录原素材文件名（溯源），运行时按 key 拼 parts-user/<key>.png，不读此字段。
 import type { PartDef } from "./parts-user-manifest";
 
-export type EyeState = "normal" | "wuyu" | "zhuangsha";
+export type EyeState = "normal" | "wuyu" | "zhuangsha" | "miyanxiao" | "hengmiyanxiao";
 
 // 无语（hya-无语-共用，左右同件不镜像；瞳仁质心实测与件同向）。
 // 位置按他给的参考图 无语参考.png 实测对位：参考与源件身体方块同宽（713 vs 714 ⇒ 尺度 1.0），
@@ -27,13 +27,35 @@ const PARTS_ZHUANGSHA: Record<string, PartDef> = {
   eye_1_zhuangsha: { file: "hya-装傻 -右.png", x: 938.4, y: 499.7, w: 179.4, h: 181.7 },
 };
 
+// 眯眼笑（Hya-miyanxiao，单件左右共用、不镜像；件 122×64 且左右描线对称）。
+// 参考图 参考-1.png 实测：身块 714 vs 源件 715、喙 351 vs 源件 350、手 232 vs 231 ⇒ 尺度 1.0；
+// 手/身统一 dx=-128、dy=+1 ⇒ 眼部 duck-space 左 (552,553) 右 (989,553)、122×64。
+// 参考图两眼墨迹分别 122×64 / 120×64（右眼窄 2px 为抗锯齿），两眼距 436 比原眼 446 略近（参考原画如此）。
+const PARTS_MIYANXIAO: Record<string, PartDef> = {
+  eye_0_miyanxiao: { file: "Hya-miyanxiao.png", x: 552, y: 553, w: 122, h: 64 },
+  eye_1_miyanxiao: { file: "Hya-miyanxiao.png", x: 989, y: 553, w: 122, h: 64 },
+};
+
+// 横眯眼笑（Hya-hengmiyanxiao-zuo / -you，左右成对、vertex 朝内，互为镜像 IoU 0.92，无需再镜像）。
+// 参考图 参考-2.png 实测：两眼墨迹框 129×116 / 131×117 ≈ 件原尺寸 129×115 / 131×116 ⇒ 尺度 1.0；
+// 参考身体板与 参考-1 同位（600,345）⇒ 沿用统一 dx=-128、dy=+1 ⇒ duck-space 左 (564,536) 右 (971,534)。
+// 两眼距 408（比原眼 446 近，> < 向喙内收），参考原画如此。
+const PARTS_HENGMIYANXIAO: Record<string, PartDef> = {
+  eye_0_hengmiyanxiao: { file: "Hya-hengmiyanxiao-zuo.png", x: 564, y: 536, w: 129, h: 115 },
+  eye_1_hengmiyanxiao: { file: "Hya-hengmiyanxiao-you.png", x: 971, y: 534, w: 131, h: 116 },
+};
+
 export const PARTS_EYES: Record<string, PartDef> = {
   ...PARTS_WUYU,
   ...PARTS_ZHUANGSHA,
+  ...PARTS_MIYANXIAO,
+  ...PARTS_HENGMIYANXIAO,
 };
 
 export const EYE_SWAP: Record<EyeState, Record<string, string>> = {
   normal: {},
   wuyu: { eye_0: "eye_0_wuyu", eye_1: "eye_1_wuyu" },
   zhuangsha: { eye_0: "eye_0_zhuangsha", eye_1: "eye_1_zhuangsha" },
+  miyanxiao: { eye_0: "eye_0_miyanxiao", eye_1: "eye_1_miyanxiao" },
+  hengmiyanxiao: { eye_0: "eye_0_hengmiyanxiao", eye_1: "eye_1_hengmiyanxiao" },
 };
