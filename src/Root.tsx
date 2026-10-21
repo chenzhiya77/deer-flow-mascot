@@ -1,10 +1,15 @@
 import { Composition, Still } from "remotion";
 
+import { Bandana } from "./Bandana";
+import { BEAK_STILL_H, BEAK_STILL_W } from "./beak-manifest";
+import { Beak } from "./Beak";
 import { CowboyCutUser } from "./CowboyCutUser";
+import { CactusBelt } from "./CactusBelt";
 import { DuckFall } from "./DuckFall";
 import { DuckJump } from "./DuckJump";
 import { DuckWalk } from "./DuckWalk";
 import { HorseCut } from "./HorseCut";
+import { HorseHead } from "./HorseHead";
 import { MountUp } from "./MountUp";
 import { RidingCut } from "./RidingCut";
 import { ThinkScratch } from "./ThinkScratch";
@@ -110,10 +115,76 @@ export const RemotionRoot: React.FC = () => {
         height={1280}
         defaultProps={{ pose: "rest", eyes: "hengmiyanxiao" }}
       />
+      <Still
+        id="UserRenzheng"
+        component={CowboyCutUser}
+        width={1856}
+        height={1280}
+        defaultProps={{ pose: "rest", eyes: "renzheng" }}
+      />
+      <Still
+        id="UserDaimeng"
+        component={CowboyCutUser}
+        width={1856}
+        height={1280}
+        defaultProps={{ pose: "rest", eyes: "daimeng" }}
+      />
+      <Still
+        id="UserXiakan"
+        component={CowboyCutUser}
+        width={1856}
+        height={1280}
+        defaultProps={{ pose: "rest", eyes: "xiakan" }}
+      />
+      <Still
+        id="UserYanbai"
+        component={CowboyCutUser}
+        width={1856}
+        height={1280}
+        defaultProps={{ pose: "rest", eyes: "yanbai" }}
+      />
+      <Still
+        id="UserCactusBelt"
+        component={CowboyCutUser}
+        width={1856}
+        height={1280}
+        defaultProps={{ pose: "rest", belt: "cactus" }}
+      />
+      <Still
+        id="UserBandana"
+        component={CowboyCutUser}
+        width={1856}
+        height={1280}
+        defaultProps={{ pose: "rest", belt: "cactus", bandana: true }}
+      />
+      <Still
+        id="UserMouth"
+        component={CowboyCutUser}
+        width={1856}
+        height={1280}
+        defaultProps={{ pose: "rest", mouth: "split" }}
+      />
+      <Still
+        id="FinalDuck"
+        component={CowboyCutUser}
+        width={1856}
+        height={1280}
+        defaultProps={{
+          pose: "rest",
+          belt: "cactus",
+          bandana: true,
+          mouth: "split",
+          background: "transparent",
+        }}
+      />
       <Still id="HorseRest" component={HorseCut} width={1856} height={1280} defaultProps={{ pose: "rest" }} />
       <Still id="HorseStep" component={HorseCut} width={1856} height={1280} defaultProps={{ pose: "step" }} />
       <Still id="RidingRest" component={RidingCut} width={1856} height={1280} defaultProps={{ pose: "rest" }} />
       <Still id="RidingRide" component={RidingCut} width={1856} height={1280} defaultProps={{ pose: "ride" }} />
+      <Still id="HorseHead" component={HorseHead} width={320} height={431} />
+      <Still id="Beak" component={Beak} width={BEAK_STILL_W} height={BEAK_STILL_H} />
+      <Still id="CactusBelt" component={CactusBelt} width={760} height={181} />
+      <Still id="Bandana" component={Bandana} width={2120} height={724} />
     </>
   );
 };

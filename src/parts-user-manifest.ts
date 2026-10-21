@@ -4,7 +4,7 @@ export type PartDef = { file: string; x: number; y: number; w: number; h: number
 
 export const PARTS_USER: Record<string, PartDef> = {
   "body": {
-    "file": "1.hya-only-shenti_副本.png",
+    "file": "Hya-wudaimaozhuti.png",
     "x": 93,
     "y": 4,
     "w": 1152,

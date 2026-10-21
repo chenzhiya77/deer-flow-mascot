@@ -1,12 +1,20 @@
 import { AbsoluteFill, Img, staticFile } from "remotion";
 
+import { Bandana } from "./Bandana";
+import { BANDANA_H, BANDANA_ON_DUCK, BANDANA_W } from "./bandana-manifest";
+import { AHOGE_CLIP, PARTS_AHOGE } from "./ahoge-manifest";
+import { BEAK_ORDER, PARTS_BEAK } from "./beak-manifest";
+import { CactusBelt } from "./CactusBelt";
+import { BELT_H, BELT_ON_DUCK, BELT_W } from "./belt-manifest";
 import { EYE_SWAP, PARTS_EYES, type EyeState } from "./eye-states-manifest";
-import { PARTS_USER } from "./parts-user-manifest";
+import { PARTS_USER, type PartDef } from "./parts-user-manifest";
 import { PART_OFFSET, SEAT_ANCHOR_PT } from "./seat-solver";
 
-const PARTS_ALL = { ...PARTS_USER, ...PARTS_EYES };
+const PARTS_ALL: Record<string, PartDef> = { ...PARTS_USER, ...PARTS_EYES, ...PARTS_BEAK, ...PARTS_AHOGE };
 
 export type UserPose = "rest" | "wave" | "blink";
+export type DuckBelt = "normal" | "cactus";
+export type DuckMouth = "normal" | "split";
 
 type Tf = {
   tx?: number;
@@ -61,6 +69,7 @@ const ATTACHED = [
   "boot_l",
   "boot_r",
   "body",
+  "ahoge",
   "belt",
   "eye_0",
   "eye_1",
@@ -100,6 +109,38 @@ const Part = ({
 const FAR_SIDE = new Set(["hand_1", "boot_r"]);
 const SPLIT_PARTS = new Set(["body", "belt", "eye_0", "eye_1", "beak"]);
 
+const CactusBeltOnDuck = () => (
+  <div
+    style={{
+      position: "absolute",
+      left: BELT_ON_DUCK.x + PART_OFFSET.x,
+      top: BELT_ON_DUCK.y + PART_OFFSET.y,
+      width: BELT_W,
+      height: BELT_H,
+      transform: `scale(${BELT_ON_DUCK.s})`,
+      transformOrigin: "0 0",
+    }}
+  >
+    <CactusBelt />
+  </div>
+);
+
+const BandanaOnDuck = () => (
+  <div
+    style={{
+      position: "absolute",
+      left: BANDANA_ON_DUCK.x + PART_OFFSET.x,
+      top: BANDANA_ON_DUCK.y + PART_OFFSET.y,
+      width: BANDANA_W,
+      height: BANDANA_H,
+      transform: `scale(${BANDANA_ON_DUCK.s})`,
+      transformOrigin: "0 0",
+    }}
+  >
+    <Bandana />
+  </div>
+);
+
 const partClip = (
   p: { x: number; w: number; h: number },
   splitAt: number,
@@ -121,12 +162,18 @@ export const DuckRig = ({
   splitAt,
   spec: specProp,
   eyes = "normal",
+  belt = "normal",
+  bandana = false,
+  mouth = "normal",
 }: {
   readonly pose: UserPose;
   readonly layer?: "all" | "near" | "far";
   readonly splitAt?: number;
   readonly spec?: DuckPoseSpec;
   readonly eyes?: EyeState;
+  readonly belt?: DuckBelt;
+  readonly bandana?: boolean;
+  readonly mouth?: DuckMouth;
 }) => {
   const spec = specProp ?? POSES[pose];
   const swap = EYE_SWAP[eyes];
@@ -158,7 +205,24 @@ export const DuckRig = ({
             splitAt !== undefined && SPLIT_PARTS.has(name)
               ? partClip(p, splitAt, layer === "far" ? "far" : "near")
               : undefined;
-          const part = <Part name={rname} tf={spec.local[name]} clip={clip} />;
+          const part = (
+            <>
+              {mouth === "split" && name === "beak" ? (
+                BEAK_ORDER.map((bname) => (
+                  <Part key={bname} name={bname} tf={spec.local[name]} clip={clip} />
+                ))
+              ) : belt === "cactus" && name === "belt" ? (
+                <CactusBeltOnDuck />
+              ) : (
+                <Part
+                  name={rname}
+                  tf={spec.local[name]}
+                  clip={name === "ahoge" ? AHOGE_CLIP : clip}
+                />
+              )}
+              {bandana && name === "belt" ? <BandanaOnDuck /> : null}
+            </>
+          );
           return spec.planted.includes(name) ? (
             <div
               key={name}
@@ -180,16 +244,30 @@ export const DuckRig = ({
   );
 };
 
+// 静帧构图：切件空间 → 画幅。参考图 Hya-fangjin-zhengti 的鸭位为 part+(127,4.5)（眼睛实测），
+// 补回骑乘用 PART_OFFSET 导致的左裁（左手与帽檐出画）。
+const STILL_TF = { x: 127 - PART_OFFSET.x, y: 4.5 - PART_OFFSET.y };
+
 export const CowboyCutUser = ({
   pose,
   eyes = "normal",
+  belt = "normal",
+  bandana = false,
+  mouth = "normal",
+  background = "#FFFFFF",
 }: {
   readonly pose: UserPose;
   readonly eyes?: EyeState;
+  readonly belt?: DuckBelt;
+  readonly bandana?: boolean;
+  readonly mouth?: DuckMouth;
+  readonly background?: string;
 }) => {
   return (
-    <AbsoluteFill style={{ backgroundColor: "#FFFFFF" }}>
-      <DuckRig pose={pose} eyes={eyes} />
+    <AbsoluteFill style={{ backgroundColor: background }}>
+      <div style={{ position: "absolute", inset: 0, transform: `translate(${STILL_TF.x}px, ${STILL_TF.y}px)` }}>
+        <DuckRig pose={pose} eyes={eyes} belt={belt} bandana={bandana} mouth={mouth} />
+      </div>
     </AbsoluteFill>
   );
 };
