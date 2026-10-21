@@ -1,0 +1,78 @@
+{
+  "name": "horse-head",
+  "snapshotDate": "2026-10-22",
+  "description": "Assembled cowboy horse head: back ear, front ear, head and normal eye on a 320×431 transparent canvas.",
+  "source": {
+    "repo": "duck-mascot",
+    "baseCommit": "ddcfe7b",
+    "note": "Working-tree snapshot 2026-10-22. Runtime source of truth remains public/parts-horse and src/horse-head-manifest.ts."
+  },
+  "canvas": {
+    "w": 320,
+    "h": 431
+  },
+  "state": {
+    "pose": "rest",
+    "eye": "normal"
+  },
+  "images": {
+    "full": "horse-head.png",
+    "trimmed": "horse-head.png",
+    "trimmedBounds": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 431
+    },
+    "note": "Alpha touches all four edges, so the trimmed image equals the full canvas."
+  },
+  "layerOrder": "back to front",
+  "layers": [
+    {
+      "name": "ear_back",
+      "file": "pieces/ear_back.png",
+      "rect": {
+        "x": 102,
+        "y": 18,
+        "w": 61,
+        "h": 111
+      }
+    },
+    {
+      "name": "ear_front",
+      "file": "pieces/ear_front.png",
+      "rect": {
+        "x": 12,
+        "y": 0,
+        "w": 68,
+        "h": 117
+      }
+    },
+    {
+      "name": "head",
+      "file": "pieces/head.png",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 320,
+        "h": 431
+      }
+    },
+    {
+      "name": "eye_normal",
+      "file": "pieces/eye_normal.png",
+      "rect": {
+        "x": 78,
+        "y": 185,
+        "w": 48,
+        "h": 65
+      }
+    }
+  ],
+  "sourceFiles": {
+    "ear_back": "ma-erduo-houmian.png",
+    "ear_front": "ma-erduo-qianmian.png",
+    "head": "ma-nian.png",
+    "eye_normal": "ma-yanjing-zhengchang.png"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "horse-saddle",
+  "snapshotDate": "2026-10-22",
+  "description": "Standalone saddle prop, transparent, 842×596. Not mounted in the current horse scene.",
+  "source": {
+    "repo": "duck-mascot",
+    "baseCommit": "ddcfe7b",
+    "note": "Working-tree snapshot 2026-10-22. Original asset: ma-maan.png. HorseCut/RidingCut currently show the saddle baked into public/parts-horse/body.png; this piece is archived separately and has no runtime manifest entry yet."
+  },
+  "canvas": {
+    "w": 842,
+    "h": 596
+  },
+  "state": {
+    "piece": "saddle",
+    "mounted": false
+  },
+  "images": {
+    "full": "saddle.png",
+    "trimmed": "saddle.png",
+    "trimmedBounds": {
+      "x": 0,
+      "y": 0,
+      "w": 842,
+      "h": 596
+    },
+    "note": "Alpha touches all four edges, so the trimmed image equals the full canvas."
+  },
+  "layerOrder": "single layer",
+  "layers": [
+    {
+      "name": "saddle",
+      "file": "saddle.png",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 842,
+        "h": 596
+      }
+    }
+  ],
+  "sourceFiles": {
+    "saddle": "ma-maan.png"
+  }
+}
