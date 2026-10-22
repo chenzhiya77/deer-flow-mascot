@@ -43,9 +43,11 @@ npm run lint                                 # eslint + tsc
 
 `assets/final-duck/` 是最终形态快照：透明底整图 `duck-final-1856x1280.png`（另附裁切版 `duck-final.png`）、`pieces/` 15 个最终分件、`eyes/` 9 种眼态素材、`manifest.json`（从后到前的层级、落位与 `eyeStates`）以及 `assemble.py`（按 manifest 重拼，`--eyes` 切眼态）。运行时真源仍是 `public/parts-*`；重渲染用 `npx remotion still FinalDuck out/final-duck.png`。
 
-`assets/horse-head/` 是独立马头快照：透明底 `horse-head.png` / `horse-head-surprised.png`（320×431）、`pieces/` 5 个分件（后耳 / 前耳 / 头盖 / 正常眼 / 吃惊眼）、`manifest.json`（基础 3 层 + `eyeStates`）以及 `assemble.py`（按 manifest 重拼，`--eye` 切眼态）。运行时真源仍是 `public/parts-horse/` 与 `src/horse-head-manifest.ts`；重渲染用 `npx remotion still HorseHead out/horse-head.png`（吃惊眼用 `HorseHeadSurprised`）。
+`assets/horse-head/` 是独立马头快照：透明底 `horse-head.png` / `horse-head-surprised.png`（320×431，均带头发）、`pieces/` 6 个分件（后耳 / 前耳 / 头盖 / 头发 / 正常眼 / 吃惊眼）、`manifest.json`（基础 3 层 + 头发层 + `eyeStates`）以及 `assemble.py`（按 manifest 重拼，`--eye` 切眼态）。运行时真源仍是 `public/parts-horse/` 与 `src/horse-head-manifest.ts`；重渲染用 `npx remotion still HorseHead out/horse-head.png`（吃惊眼用 `HorseHeadSurprised`）。
 
-`assets/horse-saddle/` 是马鞍单件快照：透明底 `saddle.png`（842×596）与 `manifest.json`；当前未挂到马身（马身 art 里已有烘入的马鞍），先作为独立道具归档。
+`assets/horse-saddle/` 是马鞍单件快照：透明底 `saddle.png`（339×240，无白边完整件）与 `manifest.json`。静态装配 `assets/horse-upper/` 已按 2.2162 / (554.2,930.9) 把它画在脖子之上；运行时 `HorseCut` / `RidingCut` 仍使用 `public/parts-horse/body.png` 中烘入的马鞍，单件保留给马鞍单独运动。
+
+`assets/horse-upper/` 是马的上半身静态装配快照（2026-10-23）：`horse-upper.png`（躯干+马鞍+新脖子，1956×1832）、`horse-bust.png`（+马头，2542×2021）、`pieces/` 2 个源分件（躯干、新脖子）、`placements.json`（2048 参考画布落位与校验数字）以及 `assemble.py`。旧脖子背衬已移除，接缝用本地取色补齐；静态图重拼用 `python assets/horse-upper/assemble.py`，桌面参考图只用于可选校验，缺失不影响成品。
 
 ## 目录结构
 
@@ -60,7 +62,7 @@ src/
   eye-states-manifest.ts   眼态库：normal / wuyu / zhuangsha / miyanxiao / hengmiyanxiao / renzheng / daimeng / xiakan / yanbai
   ahoge-manifest.ts        独立呆毛件：落位 + 帽檐裁剪
   horse-manifest.ts        马分件定位表（scripts/align_horse.py 生成）
-  horse-head-manifest.ts   独立马头装配表：双耳 / 头盖 / 眼睛（320×431，参考图实测）
+  horse-head-manifest.ts   独立马头装配表：双耳 / 头盖 / 头发 / 眼睛（320×431，参考图实测）
   beak-manifest.ts         上下嘴装配表：上嘴 / 下嘴（整嘴参考 1052×399，静帧 1052×415）
   belt-manifest.ts         独立仙人掌皮带装配表：带身 / 扣子（760×181，参考图实测）
   bandana-manifest.ts      独立方巾装配表：带身 / 结+垂尾（2120×724，参考图实测）
@@ -68,6 +70,9 @@ src/
 public/
   parts-user/  parts-horse/  parts-belt/  parts-bandana/        分件 PNG
 assets/final-duck/        最终形态快照：透明底整图 + 分件 + manifest.json
+assets/horse-head/        独立马头快照：双耳 / 头盖 / 头发 / 双眼态
+assets/horse-saddle/      马鞍单件：无白边完整件（339×240）
+assets/horse-upper/       马的上半身静态装配：躯干 + 马鞍 + 新脖子（含马头版）
 scripts/                 一次性素材工具（见下）
 ```
 
@@ -79,7 +84,7 @@ scripts/                 一次性素材工具（见下）
 - **座位求解**（`seat-solver.ts`）：鸭的稳定点（身体底边中点 + 切件平移）沿马背轮廓线 `HORSE_TOPLINE` 取列，反解 `ty` 落在鞍沿。手填 `ty` 必穿模，所以由求解器算。
 - **眼态库**（`eye-states-manifest.ts`）：`EYE_SWAP` 把 normal / wuyu / zhuangsha / miyanxiao / hengmiyanxiao / renzheng / daimeng / xiakan / yanbai 映射到左/右眼件；wuyu、zhuangsha、miyanxiao、hengmiyanxiao、renzheng、daimeng、xiakan、yanbai 为素材眼，按眼白 / 板框实测落位，一次算好永久复用。
 - **独立呆毛**（`ahoge-manifest.ts`）：主体已换成无呆毛版 `Hya-wudaimaozhuti.png`，呆毛黑描边件独立落在 `(842,335) 159×118`（按拆件前可见位置拟合，IoU 0.872）；层上带帽檐裁剪，尖端藏在帽檐后。
-- **独立马头**（`horse-head-manifest.ts`）：后耳 → 前耳 → 头盖 → 眼睛四层，坐标即参考图 `ma-tou.png` 的 320×431 画布，不挂在马身上；头盖 1:1，正常眼 0.1215、前/后耳 0.1159/0.1241 缩放落位；眼态 `normal` / `surprised` 由 `eye` prop 切换（吃惊眼 1:1 落 (56,170) 85×96）。
+- **独立马头**（`horse-head-manifest.ts`）：后耳 → 前耳 → 头盖 → 头发 → 眼睛五层，坐标即参考图 `ma-tou.png` 的 320×431 画布，不挂在马身上；头盖 1:1，头发 0.909 落 (70,78) 113×83（按戴发参考换算，填充 IoU 0.82，发层按前耳右缘裁切）、正常眼 0.1215、前/后耳 0.1159/0.1241 缩放落位；眼态 `normal` / `surprised` 由 `eye` prop 切换（吃惊眼 1:1 落 (56,170) 85×96），头发由 `hair` prop 控制（默认开启）。
 - **上下嘴**（`beak-manifest.ts`）：下嘴 → 上嘴两层，坐标即整嘴件 `parts-user/beak.png` 的 1052×399 画布；上嘴宽 1307→1052、纵向压到 391→310 并下移 12px（左右不变，顶弧/分缝/鼻孔对齐整嘴，向下露出下喙），下嘴按黑描边轮廓拟合（s=0.69，画布 1065×208 @ -7,201，线宽 17–18px 对齐整嘴的 18–20px），闭口时下嘴藏在上嘴之后。戴到鸭身上按整嘴件原位 `BEAK_ON_DUCK` 换算（`mouth` prop 切 normal / split）。
 - **独立皮带**（`belt-manifest.ts`）：带身 → 仙人掌扣两层，坐标即参考图 `Hya-皮带-参考.png` 的 760×181 画布；带身 0.472、扣子 0.1972 缩放落位。戴到鸭身上时整张画布 ×1.25 落在 `BELT_ON_DUCK`，替换旧皮带件（`belt` prop 切 normal / cactus）。
 - **独立方巾**（`bandana-manifest.ts`）：带身 → 垂尾 → 结扣三层（带身/垂尾可动、结扣为静止锚点压最上），坐标即参考图 `Hya-fangjin-cankao.png` 的 2120×724 画布；带身 1:1 原位，垂尾/结扣 0.4875 缩放落位。戴到鸭身上时整张画布 ×0.38 落在 `BANDANA_ON_DUCK`（`bandana` prop）。
