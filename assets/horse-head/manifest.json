@@ -1,7 +1,7 @@
 {
   "name": "horse-head",
   "snapshotDate": "2026-10-22",
-  "description": "Assembled cowboy horse head: back ear, front ear, head and normal eye on a 320×431 transparent canvas.",
+  "description": "Assembled cowboy horse head: back ear, front ear, head and a selectable eye on a 320×431 transparent canvas. Eye states: normal, surprised.",
   "source": {
     "repo": "duck-mascot",
     "baseCommit": "ddcfe7b",
@@ -15,6 +15,30 @@
     "pose": "rest",
     "eye": "normal"
   },
+  "eyeStates": {
+    "normal": {
+      "eye": {
+        "file": "pieces/eye_normal.png",
+        "rect": {
+          "x": 78,
+          "y": 185,
+          "w": 48,
+          "h": 65
+        }
+      }
+    },
+    "surprised": {
+      "eye": {
+        "file": "pieces/eye_surprised.png",
+        "rect": {
+          "x": 56,
+          "y": 170,
+          "w": 85,
+          "h": 96
+        }
+      }
+    }
+  },
   "images": {
     "full": "horse-head.png",
     "trimmed": "horse-head.png",
@@ -24,6 +48,7 @@
       "w": 320,
       "h": 431
     },
+    "surprised": "horse-head-surprised.png",
     "note": "Alpha touches all four edges, so the trimmed image equals the full canvas."
   },
   "layerOrder": "back to front",
@@ -59,7 +84,7 @@
       }
     },
     {
-      "name": "eye_normal",
+      "name": "eye",
       "file": "pieces/eye_normal.png",
       "rect": {
         "x": 78,
@@ -73,6 +98,7 @@
     "ear_back": "ma-erduo-houmian.png",
     "ear_front": "ma-erduo-qianmian.png",
     "head": "ma-nian.png",
-    "eye_normal": "ma-yanjing-zhengchang.png"
+    "eye_normal": "ma-yanjing-zhengchang.png",
+    "eye_surprised": "ma-chijing.png"
   }
 }

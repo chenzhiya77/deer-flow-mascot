@@ -182,6 +182,13 @@ export const RemotionRoot: React.FC = () => {
       <Still id="RidingRest" component={RidingCut} width={1856} height={1280} defaultProps={{ pose: "rest" }} />
       <Still id="RidingRide" component={RidingCut} width={1856} height={1280} defaultProps={{ pose: "ride" }} />
       <Still id="HorseHead" component={HorseHead} width={320} height={431} />
+      <Still
+        id="HorseHeadSurprised"
+        component={HorseHead}
+        width={320}
+        height={431}
+        defaultProps={{ eye: "surprised" }}
+      />
       <Still id="Beak" component={Beak} width={BEAK_STILL_W} height={BEAK_STILL_H} />
       <Still id="CactusBelt" component={CactusBelt} width={760} height={181} />
       <Still id="Bandana" component={Bandana} width={2120} height={724} />

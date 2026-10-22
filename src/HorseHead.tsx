@@ -1,11 +1,21 @@
 import { AbsoluteFill, Img, staticFile } from "remotion";
 
-import { HORSE_HEAD_ORDER, PARTS_HORSE_HEAD } from "./horse-head-manifest";
+import {
+  HORSE_EYE_STATES,
+  HORSE_HEAD_BASE_ORDER,
+  PARTS_HORSE_HEAD,
+  type HorseEyeState,
+} from "./horse-head-manifest";
 
-export const HorseHead = () => {
+export type HorseHeadProps = {
+  eye?: HorseEyeState;
+};
+
+export const HorseHead = ({ eye = "normal" }: HorseHeadProps) => {
+  const order = [...HORSE_HEAD_BASE_ORDER, HORSE_EYE_STATES[eye]];
   return (
     <AbsoluteFill>
-      {HORSE_HEAD_ORDER.map((name) => {
+      {order.map((name) => {
         const p = PARTS_HORSE_HEAD[name];
         return (
           <Img
