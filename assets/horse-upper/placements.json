@@ -1,0 +1,125 @@
+{
+  "name": "horse-upper",
+  "snapshotDate": "2026-10-23",
+  "reference": "图片-调色样张.png",
+  "referenceCanvas": {
+    "w": 2048,
+    "h": 2048
+  },
+  "frame": "placements are on the 2048x2048 reference canvas",
+  "placements": [
+    {
+      "name": "body",
+      "file": "pieces/body.png",
+      "x": 71,
+      "y": 1074,
+      "scale": 1
+    },
+    {
+      "name": "saddle",
+      "source": "assets/horse-saddle/saddle.png",
+      "x": 554.2,
+      "y": 930.9,
+      "scale": 2.2162,
+      "note": "complete 339x240 no-white-edge saddle (ma-maan-wanzheng.png), no baked notch and no trim. Reference fit enlarged 1.0414x from the first 2.1281 fit, anchored at the saddle's brown bottom-left, then nudged +8px forward (x 546.2 -> 554.2): the front edge meets the mane's inner line at its end (both x=1299 on the 2048 canvas). The horn highlight moves with it to ma (697.9,534.9), 7.2px right of ma-cankao's (690.7,534.7). The saddle is drawn ABOVE the neck; its complete right panel intentionally covers the neck's end corner, the only intended difference from ma-cankao. Layer: above the neck, below the head."
+    },
+    {
+      "name": "neck",
+      "source": "pieces/neck.png",
+      "x": 1251,
+      "y": 96,
+      "scale": 2.217,
+      "note": "new neck with trimmed mane glued on; 1:1 copy of Desktop\\道具素材\\1-matou_副本.png; drawn larger than ma-cankao (not a pixel copy), registered to the reference neck cutout by silhouette. Drawn directly over the body: the old reference backing and sampled seam fill were removed on 2026-10-23, so no old-neck piece remains."
+    },
+    {
+      "name": "head",
+      "source": "assets/horse-head/horse-head.png",
+      "x": 1890.89,
+      "y": -93.36,
+      "scale": 2.2497,
+      "note": "ma-cankao fit (eye and nostril). The 6px drop from the banded assembly is NOT applied: it compensated for the old separate mane band, which this neck piece replaces."
+    }
+  ],
+  "fit": {
+    "bottom": {
+      "samples": 286,
+      "meanPx": 1.93,
+      "maxPx": 4.0
+    },
+    "throat": {
+      "samples": 501,
+      "meanPx": 2.43,
+      "maxPx": 6.0
+    }
+  },
+  "seam": {
+    "method": "neck-body gap filled from the nearest body colours; the thin saddle-edge strip is backed with the new neck's own edge colours, below the saddle top (no old-neck pixels)",
+    "bodyGap": {
+      "pixels": 1843,
+      "bbox": [
+        1307,
+        1114,
+        1937,
+        1339
+      ]
+    },
+    "saddleEdge": {
+      "pixels": 1080,
+      "bbox": [
+        1295,
+        998,
+        1312,
+        1118
+      ]
+    }
+  },
+  "saddleLayer": {
+    "order": "above neck, below head",
+    "complete": true,
+    "trimmed": false,
+    "neckOverlapPx": 5851,
+    "note": "complete saddle covers the neck's end corner; no RGB sampling at the connection"
+  },
+  "verification": {
+    "interiorHolesAfterNeck": 0,
+    "neckBodyGapPx": 0,
+    "headNeckGapPx": 26,
+    "headNeckOverlapSolidPx": 50838,
+    "tanBody": [
+      236.4,
+      164.7,
+      96.7
+    ],
+    "tanNewNeck": [
+      232.9,
+      163.9,
+      102.3
+    ]
+  },
+  "images": {
+    "upper": {
+      "file": "horse-upper.png",
+      "canvas": [
+        1956,
+        1832
+      ],
+      "cropOriginOn2048Canvas": [
+        71,
+        94
+      ],
+      "note": "body + saddle + new neck; 1:1 with the 2048 canvas, cropped to the union bbox plus 2px"
+    },
+    "bust": {
+      "file": "horse-bust.png",
+      "canvas": [
+        2542,
+        2021
+      ],
+      "cropOriginOn2048Canvas": [
+        71,
+        -95
+      ],
+      "note": "body + saddle + new neck + head; same frame as upper, plus the head"
+    }
+  }
+}
