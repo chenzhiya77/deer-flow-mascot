@@ -1,19 +1,28 @@
 {
   "name": "horse-saddle",
-  "snapshotDate": "2026-10-22",
-  "description": "Standalone saddle prop, transparent, 842×596. Not mounted in the current horse scene.",
+  "snapshotDate": "2026-10-23",
+  "description": "Standalone saddle prop, transparent. The complete 339x240 no-white-edge saddle is active; the retired white-edge and notched copies were removed on 2026-10-23, desktop masters remain.",
   "source": {
     "repo": "duck-mascot",
     "baseCommit": "ddcfe7b",
-    "note": "Working-tree snapshot 2026-10-22. Original asset: ma-maan.png. HorseCut/RidingCut currently show the saddle baked into public/parts-horse/body.png; this piece is archived separately and has no runtime manifest entry yet."
+    "note": "saddle.png is a 1:1 copy of Desktop\\ma-maan-wanzheng.png (no white edge, 339x240). The retired white-edge copy (desktop master 图片_DSs-0202.png) and notched copy (desktop master 小黄鸭的马\\ma-maan.png) were deleted at the user's request; only the active piece remains in the pack. HorseCut/RidingCut currently show the saddle baked into public/parts-horse/body.png; this pack has no runtime manifest entry."
   },
   "canvas": {
-    "w": 842,
-    "h": 596
+    "w": 339,
+    "h": 240
   },
   "state": {
     "piece": "saddle",
-    "mounted": false
+    "mounted": true,
+    "staticMount": {
+      "assembly": "assets/horse-upper/horse-upper.png",
+      "frame": "2048x2048 upper-body reference canvas",
+      "scale": 2.2162,
+      "offset": [554.2, 930.9],
+      "layer": "above the neck (in front of the neck layer), below the head",
+      "trim": "none; the complete saddle is drawn unmodified and covers the neck's end corner",
+      "note": "Reference fit enlarged 1.0414x from the first 2.1281 fit, anchored at the saddle's brown bottom-left, then nudged +8px forward (x 546.2 -> 554.2) so the front edge meets the mane's inner line at its end (both x=1299 on the 2048 canvas). The left curl clears the body; the complete right side covers the neck's end corner (5851px over the neck). The horn highlight lands at ma (697.9,534.9), 7.2px right of ma-cankao's (690.7,534.7), as a result of the requested alignment. No notch, no trim, no sampled fill; the no-white-edge asset removes the light halo along the outline."
+    }
   },
   "images": {
     "full": "saddle.png",
@@ -21,8 +30,8 @@
     "trimmedBounds": {
       "x": 0,
       "y": 0,
-      "w": 842,
-      "h": 596
+      "w": 339,
+      "h": 240
     },
     "note": "Alpha touches all four edges, so the trimmed image equals the full canvas."
   },
@@ -34,12 +43,12 @@
       "rect": {
         "x": 0,
         "y": 0,
-        "w": 842,
-        "h": 596
+        "w": 339,
+        "h": 240
       }
     }
   ],
   "sourceFiles": {
-    "saddle": "ma-maan.png"
+    "saddle": "ma-maan-wanzheng.png"
   }
 }
