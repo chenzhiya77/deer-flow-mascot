@@ -7,7 +7,7 @@ import argparse
 import json
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent
 spec = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))
@@ -31,6 +31,10 @@ for source in spec["layers"]:
     tw, th = round(rect["w"]), round(rect["h"])
     if im.size != (tw, th):
         im = im.resize((tw, th), Image.LANCZOS)
+    if "clipPolygon" in layer:
+        mask = Image.new("L", (tw, th), 0)
+        ImageDraw.Draw(mask).polygon([tuple(p) for p in layer["clipPolygon"]], fill=255)
+        im.putalpha(Image.composite(im.getchannel("A"), Image.new("L", (tw, th), 0), mask))
     canvas.alpha_composite(im, (round(rect["x"]), round(rect["y"])))
 
 out = Path(args.out)

@@ -1,7 +1,7 @@
 {
   "name": "horse-head",
   "snapshotDate": "2026-10-22",
-  "description": "Assembled cowboy horse head: back ear, front ear, head and a selectable eye on a 320×431 transparent canvas. Eye states: normal, surprised.",
+  "description": "Assembled cowboy horse head: back ear, front ear, head, forelock hair and a selectable eye on a 320×431 transparent canvas. Eye states: normal, surprised.",
   "source": {
     "repo": "duck-mascot",
     "baseCommit": "ddcfe7b",
@@ -13,7 +13,8 @@
   },
   "state": {
     "pose": "rest",
-    "eye": "normal"
+    "eye": "normal",
+    "hair": true
   },
   "eyeStates": {
     "normal": {
@@ -84,6 +85,25 @@
       }
     },
     {
+      "name": "hair",
+      "file": "pieces/hair.png",
+      "rect": {
+        "x": 70,
+        "y": 78,
+        "w": 113,
+        "h": 83
+      },
+      "clipPolygon": [
+        [10, 0],
+        [113, 0],
+        [113, 83],
+        [0, 83],
+        [0, 39],
+        [10, 39]
+      ],
+      "note": "Forelock sits over the head; the clip hides its left end behind the front ear (ear right edge x=10, ear bottom y=39 in hair-local px)."
+    },
+    {
       "name": "eye",
       "file": "pieces/eye_normal.png",
       "rect": {
@@ -98,6 +118,7 @@
     "ear_back": "ma-erduo-houmian.png",
     "ear_front": "ma-erduo-qianmian.png",
     "head": "ma-nian.png",
+    "hair": "ma-toufa.png",
     "eye_normal": "ma-yanjing-zhengchang.png",
     "eye_surprised": "ma-chijing.png"
   }
