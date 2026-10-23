@@ -29,7 +29,8 @@ rest 站姿 + 正常眼 + 上下嘴闭合 + 仙人掌腰带 + 方巾。牛仔帽
 - 本包是快照；运行时真源仍是 `public/parts-*` 与 `src/*-manifest.ts`。
 - 呆毛独立成件（`pieces/ahoge.png`），装配时按 `clipPolygon` 裁掉帽檐上方的尖端；如需让呆毛飘出帽檐，需把帽子也拆成独立上层。
 - 旧整嘴 `public/parts-user/beak.png` 仍在仓库里，是 `mouth: "normal"` 的默认嘴态，本包不含。
-- 马与骑乘不在此包；拼好的马头快照见 `assets/horse-head/`，马鞍单件见 `assets/horse-saddle/`，马身上半身静态装配见 `assets/horse-upper/`。
+- 动作 rig（按开场片 `duckPose` 摆分件、骑乘前后分层）和开场片的五个关键帧见 `motion/`。
+- 马不在此包（`motion/` 的关键帧用 `assets/horse-legs/` 的整马）；拼好的马头快照见 `assets/horse-head/`，马鞍单件见 `assets/horse-saddle/`，马身上半身静态装配见 `assets/horse-upper/`。
 - 重新生成整图：`npx remotion still FinalDuck out/final-duck.png`。
 
 ## 自校验

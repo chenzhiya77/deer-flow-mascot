@@ -41,7 +41,7 @@ npm run lint                                 # eslint + tsc
 
 ## 最终素材包
 
-`assets/final-duck/` 是最终形态快照：透明底整图 `duck-final-1856x1280.png`（另附裁切版 `duck-final.png`）、`pieces/` 15 个最终分件、`eyes/` 9 种眼态素材、`manifest.json`（从后到前的层级、落位与 `eyeStates`）以及 `assemble.py`（按 manifest 重拼，`--eyes` 切眼态）。运行时真源仍是 `public/parts-*`；重渲染用 `npx remotion still FinalDuck out/final-duck.png`。
+`assets/final-duck/` 是最终形态快照：透明底整图 `duck-final-1856x1280.png`（另附裁切版 `duck-final.png`）、`pieces/` 15 个最终分件、`eyes/` 9 种眼态素材、`manifest.json`（从后到前的层级、落位与 `eyeStates`）以及 `assemble.py`（按 manifest 重拼，`--eyes` 切眼态）。运行时真源仍是 `public/parts-*`；重渲染用 `npx remotion still FinalDuck out/final-duck.png`。`assets/final-duck/motion/` 是鸭子的动作 rig 和开场片的五个关键帧（2026-10-24）：`duckrig.py` 用开场片 `duckPose` 的字段摆最终形态分件（骑乘时从身体中线分成马后 / 马前两半），`python assets/final-duck/motion/keyframes.py` 把鸭和新马放进开场片的五个时刻（站书堆 → 低头看马 → 空中一顿，开始下落 → 追马 → 骑马喊“出发！”），出开场镜头和角色特写到 `out/`（不进仓库）。
 
 `assets/horse-head/` 是独立马头快照：透明底 `horse-head.png` / `horse-head-surprised.png`（320×431，均带头发）、`pieces/` 6 个分件（后耳 / 前耳 / 头盖 / 头发 / 正常眼 / 吃惊眼）、`manifest.json`（基础 3 层 + 头发层 + `eyeStates`）以及 `assemble.py`（按 manifest 重拼，`--eye` 切眼态）。运行时真源仍是 `public/parts-horse/` 与 `src/horse-head-manifest.ts`；重渲染用 `npx remotion still HorseHead out/horse-head.png`（吃惊眼用 `HorseHeadSurprised`）。
 
@@ -74,6 +74,7 @@ src/
 public/
   parts-user/  parts-horse/  parts-belt/  parts-bandana/        分件 PNG
 assets/final-duck/        最终形态快照：透明底整图 + 分件 + manifest.json
+  motion/                 动作 rig + 开场片五个关键帧：duckrig.py / keyframes.py
 assets/horse-head/        独立马头快照：双耳 / 头盖 / 头发 / 双眼态
 assets/horse-saddle/      马鞍单件：无白边完整件（339×240）
 assets/horse-upper/       马的上半身静态装配：躯干 + 马鞍 + 新脖子（含马头版）
