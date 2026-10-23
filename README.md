@@ -47,7 +47,7 @@ npm run lint                                 # eslint + tsc
 
 `assets/horse-saddle/` 是马鞍单件快照：透明底 `saddle.png`（339×240，无白边完整件）与 `manifest.json`。静态装配 `assets/horse-upper/` 已按 2.2162 / (554.2,930.9) 把它画在脖子之上；运行时 `HorseCut` / `RidingCut` 仍使用 `public/parts-horse/body.png` 中烘入的马鞍，单件保留给马鞍单独运动。
 
-`assets/horse-upper/` 是马的上半身静态装配快照（2026-10-23）：`horse-upper.png`（躯干+马鞍+新脖子，1956×1832）、`horse-bust.png`（+马头，2542×2021）、`pieces/` 2 个源分件（躯干、新脖子）、`placements.json`（2048 参考画布落位与校验数字）以及 `assemble.py`。旧脖子背衬已移除，接缝用本地取色补齐；静态图重拼用 `python assets/horse-upper/assemble.py`，桌面参考图只用于可选校验，缺失不影响成品。
+`assets/horse-upper/` 是马的上半身静态装配快照（2026-10-23）：`horse-upper.png`（躯干+马鞍+新脖子，1956×1832）、`horse-bust.png`（+马头，2542×2021）、`pieces/` 2 个源分件（躯干、新脖子）、`placements.json`（2048 参考画布落位与校验数字）以及 `assemble.py`。旧脖子背衬已移除，接缝用本地取色补齐；静态图重拼用 `python assets/horse-upper/assemble.py`，桌面参考图只用于可选校验，缺失不影响成品。`assets/horse-upper/motion/` 是脖子＋鬃毛摆动预览 rig：`python assets/horse-upper/motion/preview.py` 出 8 秒预览到 `out/`（不进仓库）。
 
 ## 目录结构
 
@@ -73,6 +73,7 @@ assets/final-duck/        最终形态快照：透明底整图 + 分件 + manife
 assets/horse-head/        独立马头快照：双耳 / 头盖 / 头发 / 双眼态
 assets/horse-saddle/      马鞍单件：无白边完整件（339×240）
 assets/horse-upper/       马的上半身静态装配：躯干 + 马鞍 + 新脖子（含马头版）
+  motion/                 脖子＋鬃毛摆动预览 rig：rig.py / preview.py / mane.json
 scripts/                 一次性素材工具（见下）
 ```
 

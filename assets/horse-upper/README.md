@@ -9,6 +9,7 @@
 - `pieces/` — 2 个源分件：`body.png`（躯干，1956×852；桌面 `道具素材\小黄鸭的马\ma-shengti.png` 1:1 拷贝，裁切原点 (71,1074)）、`neck.png`（新脖子带修剪鬃毛，335×566；桌面 `道具素材\1-matou_副本.png` 1:1 拷贝）
 - `placements.json` — 全部落位与校验数字
 - `assemble.py` — 复现脚本（`python assemble.py`）
+- `motion/` — 脖子＋鬃毛摆动预览 rig（`rig.py` / `preview.py` / `mane.json`），只读本包素材，见 `motion/README.md`
 
 ## 落位（2048×2048 参考画布坐标）
 
