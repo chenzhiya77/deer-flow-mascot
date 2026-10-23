@@ -4,7 +4,7 @@
 
 ## 包含
 
-- `rig.py` — 姿态渲染：`render(neck_deg, head_deg, block_degs, hair_deg)` 返回一帧（预乘 RGBA，身体坐标系，身体与马鞍不动）
+- `rig.py` — 姿态渲染：`render(neck_deg, head_deg, block_degs, hair_deg)` 返回一帧（预乘 RGBA，身体坐标系，身体与马鞍不动）；可选 `front=` 换掉身体＋马鞍层（`horse-legs/haunch.py` 的臀部跟随用）
 - `preview.py` — 8 秒时间轴 + 版面：左边整马（身体随步态起伏），右边局部放大（身体固定，看接缝）
 - `mane.json` — 6 块鬃毛的上 / 右 / 下边与转轴、鬃毛整体轮廓；都从鬃毛示意图量出，单位是 `neck.png` 像素（示意图在 (982,120) 处与 `neck.png` 1:1 重合）
 

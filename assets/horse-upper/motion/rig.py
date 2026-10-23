@@ -1,7 +1,8 @@
 """Neck + mane swing rig for the horse-upper pack (preview only).
 
 render(neck_deg, head_deg, block_degs, hair_deg) returns one premultiplied
-RGBA frame in body-local space (the body and saddle stay still):
+RGBA frame in body-local space (the body and saddle stay still; front= swaps
+in another body + saddle layer, e.g. the haunch warp of horse-legs/haunch.py):
 
 * Layer order: neck -> head -> body -> saddle. The neck sits BEHIND the body
   and saddle and is extended downwards (EXT) and to the left under them, so no
@@ -300,8 +301,9 @@ def bend_warp(img, deg):
     return out
 
 
-def render(neck_deg, head_deg, block_degs, hair_deg, with_base=True, bend=True):
-    """Premultiplied RGBA frame (FH x FW, body-local, body static). Degrees, positive = clockwise on screen."""
+def render(neck_deg, head_deg, block_degs, hair_deg, with_base=True, bend=True, front=None):
+    """Premultiplied RGBA frame (FH x FW, body-local, body static). Degrees, positive = clockwise on screen.
+    front: body + saddle layer laid on top (default front_f)."""
     Rn = R3(neck_deg, *c2f(*NECK_PIVOT))
     Mn = Rn @ M_nc
     if bend:
@@ -313,7 +315,7 @@ def render(neck_deg, head_deg, block_degs, hair_deg, with_base=True, bend=True):
     frac = np.clip(em / np.maximum(out[..., 3], 1e-4), 0, 1)        # share of each pixel that comes from the extension
     out *= (1 - frac * (1 - ext_allowed))[..., None]
     over(out, warp(render_head(hair_deg), Rn @ R3(head_deg, *c2f(*HEAD_PIVOT)) @ M_hl))
-    over(out, front_f)
+    over(out, front_f if front is None else front)
     return out
 
 

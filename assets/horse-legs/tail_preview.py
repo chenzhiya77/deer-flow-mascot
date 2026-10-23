@@ -1,7 +1,7 @@
 """8 s tail swing preview: walk -> head toss + take-off -> gallop (same timeline as the neck/mane preview).
 
 Left: whole horse (neck/mane rig + chain tail) with body bob / pitch. Right: tail close-up, body fixed.
-Legs are left out (their gait comes next), like the neck/mane preview.
+Legs are left out, like the neck/mane preview; gait_preview.py adds them.
 
 Usage:
   python tail_preview.py                     # -> <repo>/out/horse-tail-preview.mp4
@@ -113,7 +113,7 @@ def compose(T):
         if j < len(PHASES) - 1:
             d.text((x, 114), '→', font=PV.f_chip, fill=(190, 183, 175))
             x += 40
-    d.text((58, 180), '整体（身体随步态起伏；腿的步态下一步接）', font=PV.f_cap, fill=GRAY)
+    d.text((58, 180), '整体（身体随步态起伏；腿的步态见 gait_preview.py）', font=PV.f_cap, fill=GRAY)
     d.text((CARD[0] + 22, CARD[1] + 16), '尾巴局部（身体固定）', font=PV.f_cap, fill=GRAY)
     g = PV.gblend(T)
     hz = TR.lerp(*MO['freq'], g)
