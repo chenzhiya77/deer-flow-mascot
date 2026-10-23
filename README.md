@@ -51,6 +51,8 @@ npm run lint                                 # eslint + tsc
 
 `assets/horse-legs/` 是马的四条腿 + 尾巴（2026-10-23）：分件由代码按 `horse-upper` 的画风生成（`python assets/horse-legs/gen.py` → `out/horse-legs/`，PNG 不进仓库），`compose()` 按姿态合成整马；尾巴用开场片的 10 节链摆动，形状不变、沿平滑脊线弯曲，`python assets/horse-legs/tail_preview.py` 出 8 秒预览到 `out/`；腿照开场片的慢走 / 跑动步态走，着地的蹄锁在地面上，身上画的近侧后腿大腿跟着腿转，压在腿上的那段身体轮廓削细到接近参考图，`python assets/horse-legs/gait_preview.py` 出 8 秒步态预览。
 
+`assets/horse-lantern/` 是开场片沙漠夜景的马灯挂到新马上的预览（2026-10-23）：灯的单摆（`lantern.ts`）和地上光斑、光晕、夜景调色照搬开场片，挂点在马鞍前下角 (1250,1395)；摆动用柔化版，只让灯感受 25% 的竖直颠簸（原参数在跑动时一直撞 ±69° 限位，开场片本身也是这样），灯体用本包的墨线画法。`python assets/horse-lantern/lantern_preview.py` 出 8 秒夜景预览到 `out/`（右边特写对比原参数 / 柔化），`--style svg` 换成开场片原版矢量灯。
+
 ## 目录结构
 
 ```
@@ -77,6 +79,7 @@ assets/horse-saddle/      马鞍单件：无白边完整件（339×240）
 assets/horse-upper/       马的上半身静态装配：躯干 + 马鞍 + 新脖子（含马头版）
   motion/                 脖子＋鬃毛摆动预览 rig：rig.py / preview.py / mane.json
 assets/horse-legs/        马的四条腿 + 尾巴：代码生成分件、姿态合成、尾巴 10 节链、步态与预览
+assets/horse-lantern/     马灯：开场片的马灯挂到新马上，夜景调色与摆动对比预览
 scripts/                 一次性素材工具（见下）
 ```
 
