@@ -49,7 +49,7 @@ npm run lint                                 # eslint + tsc
 
 `assets/horse-upper/` 是马的上半身静态装配快照（2026-10-23）：`horse-upper.png`（躯干+马鞍+新脖子，1956×1832）、`horse-bust.png`（+马头，2542×2021）、`pieces/` 2 个源分件（躯干、新脖子）、`placements.json`（2048 参考画布落位与校验数字）以及 `assemble.py`。旧脖子背衬已移除，接缝用本地取色补齐；静态图重拼用 `python assets/horse-upper/assemble.py`，桌面参考图只用于可选校验，缺失不影响成品。`assets/horse-upper/motion/` 是脖子＋鬃毛摆动预览 rig：`python assets/horse-upper/motion/preview.py` 出 8 秒预览到 `out/`（不进仓库）。
 
-`assets/horse-legs/` 是马的四条腿 + 尾巴（2026-10-23）：分件由代码按 `horse-upper` 的画风生成（`python assets/horse-legs/gen.py` → `out/horse-legs/`，PNG 不进仓库），`compose()` 按姿态合成整马；尾巴用开场片的 10 节链摆动，形状不变、沿平滑脊线弯曲，`python assets/horse-legs/tail_preview.py` 出 8 秒预览到 `out/`；腿照开场片的慢走 / 跑动步态走，着地的蹄锁在地面上，身上画的近侧后腿大腿跟着腿转，`python assets/horse-legs/gait_preview.py` 出 8 秒步态预览。
+`assets/horse-legs/` 是马的四条腿 + 尾巴（2026-10-23）：分件由代码按 `horse-upper` 的画风生成（`python assets/horse-legs/gen.py` → `out/horse-legs/`，PNG 不进仓库），`compose()` 按姿态合成整马；尾巴用开场片的 10 节链摆动，形状不变、沿平滑脊线弯曲，`python assets/horse-legs/tail_preview.py` 出 8 秒预览到 `out/`；腿照开场片的慢走 / 跑动步态走，着地的蹄锁在地面上，身上画的近侧后腿大腿跟着腿转，压在腿上的那段身体轮廓削细到接近参考图，`python assets/horse-legs/gait_preview.py` 出 8 秒步态预览。
 
 ## 目录结构
 

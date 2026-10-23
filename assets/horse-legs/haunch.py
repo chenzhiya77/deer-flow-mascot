@@ -11,6 +11,11 @@ so the lower lobe turns fully, and the weight fades out upwards into the rump an
 into the belly, which stays put. The art's lines and shading stay continuous: nothing is cut or redrawn.
 angle() follows the leg by FOLLOW, softly limited to +-LIMIT.
 
+Joint line: where the LH leg is behind the body, the body's silhouette outline (17 px) is the line between
+thigh and leg - as heavy as the outer silhouette, while the reference draws it about 3/4 as thick. seam()
+gives the outer SEAM px of that outline (antialiased, turned with the haunch like the art); gait_preview
+leaves it out where the LH leg is behind, so the leg shows through and the joint line is about 12 px.
+
 Canvas constants (CREASE, the weight ranges, ROI) are measured on the current body placement.
 """
 import math
@@ -35,6 +40,7 @@ CREASE = np.array([(1430, 527), (1600, 529), (1620, 526), (1640, 523), (1660, 51
                    (1720, 492), (1740, 481), (1760, 469), (1780, 457), (1800, 446), (1820, 430)], float)
 TOP, BAND = (1420, 1720), (4, 120)  # weight fade: upwards (canvas y) and across the crease (d, canvas px)
 ROI = (40, 1380, 800, 1960)  # canvas box that may change (x0, y0, x1, y1)
+SEAM = 5.0     # canvas px of the body outline left out where the near hind leg is behind it (0 = keep all)
 
 
 def smooth(a, b, x):
@@ -76,18 +82,48 @@ def source_map(theta):
     return px, py
 
 
-def front(theta):
-    """Body + saddle layer (premultiplied, rig frame) with the haunch turned by theta degrees."""
+def maps(theta):
+    """Rig-frame remap coordinates of the warp for the ROI pixels (None when theta ~ 0: nothing moves)."""
     if abs(theta) < 1e-3:
-        return R.front_f
+        return None
     px, py = source_map(theta)
-    mx = ((px - R.FX0) * R.RS).astype(np.float32)
-    my = ((py - R.FY0) * R.RS).astype(np.float32)
-    body = cv2.remap(R.body_f, mx, my, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(0, 0, 0, 0))
+    return ((px - R.FX0) * R.RS).astype(np.float32), ((py - R.FY0) * R.RS).astype(np.float32)
+
+
+def front(theta, mp=None):
+    """Body + saddle layer (premultiplied, rig frame) with the haunch turned by theta degrees."""
+    mp = maps(theta) if mp is None else mp
+    if mp is None:
+        return R.front_f
+    body = cv2.remap(R.body_f, mp[0], mp[1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(0, 0, 0, 0))
     sad = R.saddle_f[FY0:FY1, FX0:FX1]
     out = R.front_f.copy()
     out[FY0:FY1, FX0:FX1] = body * (1 - sad[..., 3:4]) + sad
     return out
+
+
+def outline_band(cut, up=4):
+    """Outer `cut` canvas px of the body silhouette, ROI pixels of the rig frame, antialiased: distance to the
+    alpha-0.5 contour on an `up`x supersampled alpha, box-filtered back."""
+    a = R.body_f[FY0:FY1, FX0:FX1, 3]
+    big = cv2.resize(a, (a.shape[1] * up, a.shape[0] * up), interpolation=cv2.INTER_LINEAR)
+    inside = cv2.copyMakeBorder((big > 0.5).astype(np.uint8), 1, 1, 1, 1, cv2.BORDER_REPLICATE)
+    dist = cv2.distanceTransform(inside, cv2.DIST_L2, cv2.DIST_MASK_PRECISE)[1:-1, 1:-1]
+    cov = np.clip(cut * R.RS * up - dist + 1.0, 0.0, 1.0)  # dist 1 = the pixel next to the contour, 0.5 px in
+    return cv2.resize(cov, (a.shape[1], a.shape[0]), interpolation=cv2.INTER_AREA)
+
+
+SEAM_F = outline_band(SEAM) if SEAM > 0 else None
+
+
+def seam(theta, mp=None):
+    """outline_band(SEAM) turned with the haunch like front() (ROI pixels of the rig frame); None if SEAM = 0."""
+    if SEAM_F is None:
+        return None
+    mp = maps(theta) if mp is None else mp
+    if mp is None:
+        return SEAM_F
+    return cv2.remap(SEAM_F, mp[0] - FX0, mp[1] - FY0, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
 
 
 def jacobian_min(theta, step=2):

@@ -3,13 +3,15 @@
 Left: the whole horse (legs + chain tail + neck/mane rig, body bob / pitch) on ground that scrolls back at
 the horse's speed - a planted hoof has to move exactly with the ground marks. Right: a legs close-up of
 the same frame and a footfall chart of the last 3 s (bar = hoof on the ground). The near hind thigh drawn
-on the body turns with the near hind upper leg (haunch.py).
+on the body turns with the near hind upper leg, and where that leg is behind the body the body's outline
+is drawn thinner (haunch.py).
 
 Usage:
   python gait_preview.py                     # -> <repo>/out/horse-gait-preview.mp4
   python gait_preview.py --still 1.0 5.2     # stills -> <repo>/out/horse-gait-t1.0.png ...
   python gait_preview.py --jobs 2 --out my.mp4
   python gait_preview.py --no-haunch         # thigh kept still, for comparison (-> ...-no-haunch.mp4 / .png)
+  python gait_preview.py --no-seam           # full-weight outline over the near hind leg (-> ...-no-seam.mp4)
 """
 import argparse
 import math
@@ -45,11 +47,22 @@ GAIT = GT.Gait(PV.PHI, _g, np.concatenate([[0.0], np.cumsum((_v[1:] + _v[:-1]) /
 MAN = G.load_manifest()
 LEG_PARTS = ('upper', 'lower', 'hoof')
 HAUNCH = True  # --no-haunch: keep the drawn near hind thigh still
+SEAM = True    # --no-seam: keep the full body outline over the near hind leg
 
 
 def set_haunch(on):
     global HAUNCH
     HAUNCH = on
+
+
+def set_seam(on):
+    global SEAM
+    SEAM = on
+
+
+def set_flags(haunch, seam):
+    set_haunch(haunch)
+    set_seam(seam)
 
 
 def T3(tx, ty):
@@ -101,8 +114,9 @@ class View:
         return self.M[0, 0] * X + self.M[0, 2] - 0.5
 
 
-def put(layer, src, A):
-    """Composite premultiplied src into layer through A (3x3: src index -> layer index), bbox-limited."""
+def put(layer, src, A, keep=None):
+    """Composite premultiplied src into layer through A (3x3: src index -> layer index), bbox-limited.
+    keep: optional layer-sized map the warped src is multiplied by first (1 = all of it)."""
     h, w = src.shape[:2]
     c = A @ np.array([[-0.5, w - 0.5, w - 0.5, -0.5], [-0.5, -0.5, h - 0.5, h - 0.5], [1, 1, 1, 1.]])
     x0, y0 = max(0, int(math.floor(c[0].min())) - 1), max(0, int(math.floor(c[1].min())) - 1)
@@ -111,6 +125,8 @@ def put(layer, src, A):
         return
     out = cv2.warpAffine(src, (T3(-x0, -y0) @ A)[:2], (x1 - x0, y1 - y0), flags=cv2.INTER_LINEAR,
                          borderMode=cv2.BORDER_CONSTANT, borderValue=(0, 0, 0, 0))
+    if keep is not None:
+        out *= keep[y0:y1, x0:x1, None]
     sub = layer[y0:y1, x0:x1]
     sub *= 1 - out[..., 3:4]
     sub += out
@@ -125,8 +141,21 @@ def put_piece(view, layer, name, target, ang, s=1.0):
 TAIL_BOX = (-860, 700, 680, 2260)  # body-local canvas box the tail stays in
 
 
+def seam_view(view, st):
+    """haunch.seam() band of this frame in view px (layer-sized), placed like the bust."""
+    band = st['seam']
+    bh, bw = band.shape
+    sw, sh = max(1, round(bw * view.k / R.RS)), max(1, round(bh * view.k / R.RS))
+    small = cv2.resize(band, (sw, sh), interpolation=cv2.INTER_AREA)
+    A = (UNHALF @ view.M @ st['B'] @ T3(R.FX0, R.FY0) @ S3(1 / R.RS, 1 / R.RS) @ T3(HN.FX0, HN.FY0)
+         @ S3(bw / sw, bh / sh) @ HALF)
+    return cv2.warpAffine(small, A[:2], view.size, flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+
+
 def render_view(view, st, tail=True):
-    """Premultiplied RGBA layer of the horse in this view: tail, far legs, near hind leg, bust, near fore leg."""
+    """Premultiplied RGBA layer of the horse in this view: tail, far legs, near hind leg, bust, near fore leg.
+    Where the near hind leg is behind the bust, the outer band of the body outline (st['seam']) is left out,
+    so the joint line at the thigh is thinner than the silhouette (as in the reference)."""
     w, h = view.size
     layer = np.zeros((h, w, 4), np.float32)
     k, B = view.k, st['B']
@@ -134,15 +163,22 @@ def render_view(view, st, tail=True):
         tw, th = round((TAIL_BOX[2] - TAIL_BOX[0]) * k), round((TAIL_BOX[3] - TAIL_BOX[1]) * k)
         tl = TP.RIG.render(st['spine'], P.TAIL_PIVOT, TAIL_BOX[:2], (tw, th), scale=k)
         put(layer, tl, UNHALF @ view.M @ B @ T3(*TAIL_BOX[:2]) @ S3(1 / k, 1 / k) @ HALF)
+    keep = None
     for key in ('RH', 'RF', 'LH', 'BUST', 'LF'):
         if key == 'BUST':
             small = cv2.resize(st['fr'], view.bust_wh, interpolation=cv2.INTER_AREA)
-            put(layer, small, UNHALF @ view.M @ B @ view.bust_A)
+            put(layer, small, UNHALF @ view.M @ B @ view.bust_A, keep)
             continue
         q, pre = st['legs'][key], key.lower()
-        put_piece(view, layer, pre + '_upper', q['hip'], q['a_up'], q['s'])
-        put_piece(view, layer, pre + '_lower', q['knee'], q['a_low'], q['s'])
-        put_piece(view, layer, pre + '_hoof', q['fet'], q['a_hoof'])
+        own = key == 'LH' and st.get('seam') is not None   # near hind leg on its own layer: its alpha is needed
+        dst = np.zeros_like(layer) if own else layer
+        put_piece(view, dst, pre + '_upper', q['hip'], q['a_up'], q['s'])
+        put_piece(view, dst, pre + '_lower', q['knee'], q['a_low'], q['s'])
+        put_piece(view, dst, pre + '_hoof', q['fet'], q['a_hoof'])
+        if own:
+            layer *= 1 - dst[..., 3:4]
+            layer += dst
+            keep = 1 - seam_view(view, st) * dst[..., 3]
     return layer
 
 
@@ -228,9 +264,11 @@ def frame_state(T):
     B = R.T3(0, p['bob'] / NECK_BOB * GT.BOB_UNIT) @ R.R3(p['pitch'], *PV.CB)
     legs = GT.poses(GAIT, T, p['g'], B)
     th = HN.angle(legs, p['pitch']) if HAUNCH else 0.0
+    mp = HN.maps(th)
     return dict(p=p, B=B, legs=legs, haunch=th, scroll=GAIT.scroll(T),
                 spine=TR.chain_spine(TP.tail_dev(T), TP.L, G.TAIL_AXIS, G.SPINE_N),
-                fr=R.render(p['neck'], p['head'], p['blocks'], p['hair'], front=HN.front(th)))
+                fr=R.render(p['neck'], p['head'], p['blocks'], p['hair'], front=HN.front(th, mp)),
+                seam=HN.seam(th, mp) if SEAM else None)
 
 
 def compose(T):
@@ -312,9 +350,11 @@ def main():
     ap.add_argument('--jobs', type=int, default=2, help='worker processes (default 2)')
     ap.add_argument('--out', help='output .mp4 (default out/horse-gait-preview.mp4)')
     ap.add_argument('--no-haunch', action='store_true', help='keep the drawn near hind thigh still (comparison)')
+    ap.add_argument('--no-seam', action='store_true', help='keep the full body outline over the near hind leg (comparison)')
     a = ap.parse_args()
     set_haunch(not a.no_haunch)
-    tag = '-no-haunch' if a.no_haunch else ''
+    set_seam(not a.no_seam)
+    tag = ('-no-haunch' if a.no_haunch else '') + ('-no-seam' if a.no_seam else '')
     os.makedirs(OUT, exist_ok=True)
     if a.still:
         for t in a.still:
@@ -336,7 +376,7 @@ def main():
         def write(buf):
             vw.write(cv2.cvtColor(np.frombuffer(buf, np.uint8).reshape(H, W, 3), cv2.COLOR_RGB2BGR))
     from multiprocessing import Pool
-    with Pool(max(1, a.jobs), initializer=set_haunch, initargs=(HAUNCH,)) as pool:  # flag also under spawn
+    with Pool(max(1, a.jobs), initializer=set_flags, initargs=(HAUNCH, SEAM)) as pool:  # flags also under spawn
         for n, buf in enumerate(pool.imap(frame_bytes, range(NF))):
             write(buf)
             if n % 30 == 0:

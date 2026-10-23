@@ -10,7 +10,7 @@
 - `compose.py` — 正向运动学（肩 / 髋 → 膝 / 飞节 → 蹄）、两段 IK、按转轴落位
 - `tailrig.py` — 尾巴链：尾巴保持参考图的形状，沿平滑脊线弯曲；`chain_dev()` 给出 10 节的摆角，`MOTION` 是全部动作参数
 - `gait.py` — 腿的步态：照开场片的慢走 / 跑动步态表给每条腿排相位、着地 / 抬起，两段 IK 解出上段 / 下段 / 蹄的角度；着地的蹄锁在地面上
-- `haunch.py` — 臀部跟随：身体图上画的近侧后腿大腿跟着左后腿上段转，只对身体图的这一块局部变形
+- `haunch.py` — 臀部跟随：身体图上画的近侧后腿大腿跟着左后腿上段转，只对身体图的这一块局部变形；腿根接缝：压在左后腿上的那段身体外轮廓削细 5 px（`SEAM`）
 - `tail_preview.py` — 8 秒尾巴摆动预览，时间轴与 `horse-upper/motion` 相同：慢走 → 甩头＋起跑 → 跑动
 - `gait_preview.py` — 8 秒步态预览，时间轴同上：左边整马（腿 + 尾巴 + 脖子 / 鬃毛）走在按马速后移的地面上，右边腿部放大 + 最近 3 秒的着地时序
 - `sheets.py` — 姿势总览 `pose_sheet.png`（6 个姿势）、分件总览 `parts_sheet.png`（标出转轴）
@@ -26,6 +26,7 @@ python assets/horse-legs/tail_preview.py --still 1 3.4   # 单帧 → out/horse-
 python assets/horse-legs/gait_preview.py                 # 8 秒预览 → out/horse-gait-preview.mp4
 python assets/horse-legs/gait_preview.py --still 1 7.9   # 单帧 → out/horse-gait-t1.png …
 python assets/horse-legs/gait_preview.py --no-haunch     # 臀部不跟着转，对比用 → out/horse-gait-preview-no-haunch.mp4
+python assets/horse-legs/gait_preview.py --no-seam       # 腿根接缝不削细，对比用 → out/horse-gait-preview-no-seam.mp4
 ```
 
 - `sheets.py` / `tail_preview.py` / `gait_preview.py` 找不到 `out/horse-legs/pieces.json` 时先自动生成分件（约 5 秒）。
@@ -81,6 +82,7 @@ python assets/horse-legs/gait_preview.py --no-haunch     # 臀部不跟着转，
 - **`pose['TAIL']`** 可以是一个角度（整条刚性转）、`(lift, droop)`（尺子式弯曲，姿势总览用）或 10 个逐节角度（链式摆动）。
 - **臀部跟随**：身体图上画着近侧后腿的大腿（一块鼓包，下沿在左后腿髋轴下方约 115px，前缘是那条深色褶线），腿在里面转而鼓包不动，看起来像腿在固定的套子里滑。`haunch.py` 只让身体图的这一块局部变形：每个点绕左后腿髋轴 (349.6,1714) 转 w·θ。w 在鼓包下半部为 1，往上（y 1420→1720）渐变到臀部轮廓不动，往前越过褶线（4→120px）渐变到肚子不动。θ = 20°·tanh(0.5·φ / 20°)，φ 是左后腿上段相对身体、从站立角算起的转角：跟 50%，接近 ±20° 时慢慢收住。线条和明暗都是连着的，不切图、不补画。
 - 效果：跑动时臀部转 −13°～+15°，腿相对臀部的摆动范围从约 70° 降到约 42°。身体没有撕开或折叠，局部面积最多压到原来的约 0.6；站立姿势与原图逐像素相同，改动只在臀部这一块（画布 x 57–647、y 1423–1863），马鞍和远侧后腿不动。
+- **腿根接缝**：左后腿画在身体下面，大腿鼓包的下沿就是身体的外轮廓，压在腿上时和外轮廓一样粗（17 px），比参考图重：参考图里这条接缝约是外轮廓的 3/4。`haunch.outline_band()` 取身体外轮廓最外侧 5 px（`SEAM`；在 4 倍超采样上算到轮廓的距离，边缘抗锯齿），和身体图一起随臀部变形；`render_view()` 把左后腿单独画一层，只在左后腿垫在下面的地方去掉这 5 px、露出腿。接缝从 17 px 变成 12 px，接近参考图；挨着背景的轮廓、远侧腿和尾巴上的线不变，逐帧对比改动只在鼓包下沿和腿交界的一圈。每帧渲染多约 6%。
 
 ## 已知差异
 
