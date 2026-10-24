@@ -71,8 +71,9 @@ def horse_x(T):
 
 
 # ---------------------------------------------------------------- horse before the preview's t = 0
-# keyframe 1 is 0.7 s before the horse preview starts; the walk is steady there, so phases extend linearly
-PRE = 1.0
+# keyframe 1 is 0.7 s before the horse preview starts, the opening (opening_preview.py) 1.9 s; the walk is steady
+# there, so phases extend linearly
+PRE = 2.0
 _samp = PV.samp
 
 
@@ -87,10 +88,15 @@ GAIT = GT.Gait([PV.samp(PV.PHI, t) for t in _t], [PV.gblend(t) for t in _t],
                np.concatenate([[0.0], np.cumsum((_v[1:] + _v[:-1]) / 2 * PV.DT)]), PV.DT)
 
 
-def horse_state(tp):
-    """gait_preview.frame_state at preview time tp (may be negative)."""
+def body(p, dip=0.0):
+    """Body matrix (canvas) of the horse in pose p = PV.params(tp); dip = extra bob, opening units (+ down)."""
+    return R.T3(0, (p['bob'] / GP.NECK_BOB + dip) * GT.BOB_UNIT) @ R.R3(p['pitch'], *PV.CB)
+
+
+def horse_state(tp, dip=0.0):
+    """gait_preview.frame_state at preview time tp (may be negative), body lowered by dip (see body)."""
     p = PV.params(tp)
-    B = R.T3(0, p['bob'] / GP.NECK_BOB * GT.BOB_UNIT) @ R.R3(p['pitch'], *PV.CB)
+    B = body(p, dip)
     legs = GT.poses(GAIT, tp + PRE, p['g'], B)
     th = HN.angle(legs, p['pitch'])
     mp = HN.maps(th)

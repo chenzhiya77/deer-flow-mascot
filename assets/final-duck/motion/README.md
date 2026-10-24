@@ -1,11 +1,13 @@
 # final-duck/motion
 
-最终形态鸭子的动作 rig 和开场片的五个关键帧，2026-10-24。`duckrig.py` 用开场片 `duckPose` 的字段（倾斜、头、两只翅膀、腿、眼、嘴、速度……）摆最终形态的分件；`keyframes.py` 把它和新马（`../../horse-legs` 的腿 / 尾巴 / 脖子＋鬃毛 rig）放进开场片的五个时刻：站书堆 → 低头看马 → 空中一顿，开始下落 → 追马 → 骑马喊“出发！”。只用于预览，还没接进 Remotion；渲染结果写到 `out/`，不进仓库；包外素材只读不改。
+最终形态鸭子的动作 rig、开场片的五个关键帧和整段连续预览，2026-10-24。`duckrig.py` 用开场片 `duckPose` 的字段（倾斜、头、两只翅膀、腿、眼、嘴、速度……）摆最终形态的分件；`keyframes.py` 把它和新马（`../../horse-legs` 的腿 / 尾巴 / 脖子＋鬃毛 rig）放进开场片的五个时刻：站书堆 → 低头看马 → 空中一顿，开始下落 → 追马 → 骑马喊“出发！”；`opening_preview.py` 把整段开场连起来：鸭子的动作公式从开场片逐行搬过来，和新马一起逐帧出片，从站在书堆上一直到骑着马跑出画面。只用于预览，还没接进 Remotion；渲染结果写到 `out/`，不进仓库；包外素材只读不改。
 
 ## 包含
 
 - `duckrig.py` — 鸭子 rig：`Duck().render(V, pose, size, part)` 返回一层预乘 RGBA（任意缩放，`V` = 世界 → 画面的 3×3 矩阵）。`pose` 用开场片 `duckPose` 的字段，另加 `x, y`（锚点的世界坐标：站立是两只靴底中间，坐下是箱体底边中点）、`k`（1 鸭像素 = 多少世界像素）、`ground`（靴子站的地面 y）；`part='far'` / `'near'` 是骑乘时画在马后 / 马前的两半。`python duckrig.py` 跑自校验
 - `keyframes.py` — 五个关键帧：每帧出开场镜头和角色特写各一张（1920×1080），另出骑乘放大图和两张 2×3 总览
+- `opening_preview.py` — 整段连续预览：开场片时间轴的每一帧（60 fps，1920×1080，7.3 秒），左上角标出段落名、故事时间和慢放倍率；`--still` 出单帧，`--check` 和开场片自己的数值逐帧对比
+- `opening_dump.mts` — 从开场片源码取参考数值（鸭的姿态、座位、马的俯仰和 x、镜头），给 `--check` 用；需要开场片的源码目录（`OPENING_SRC`）
 
 ## 运行
 
@@ -14,9 +16,14 @@ pip install numpy opencv-python pillow pycairo
 python assets/final-duck/motion/keyframes.py              # → out/final-duck-keyframes/
 python assets/final-duck/motion/keyframes.py --only 2 5   # 只出这两帧（不出总览）
 python assets/final-duck/motion/duckrig.py                # 自校验
+python assets/final-duck/motion/opening_preview.py                    # → out/final-duck-opening/opening-preview.mp4
+python assets/final-duck/motion/opening_preview.py --still 2.35 4.9   # 只出这两个故事时刻的单帧（T2.35.png …）
+OPENING_SRC=<开场片>/src npx tsx assets/final-duck/motion/opening_dump.mts > dump.json
+python assets/final-duck/motion/opening_preview.py --check dump.json  # 移植自校验
 ```
 
 - 输出：`kf1.png` … `kf5.png`（开场镜头）、`kf1-close.png` … `kf5-close.png`（角色特写）、`kf5-seat.png`（骑乘放大，看前后分层）、`keyframes-sheet.png` / `keyframes-close-sheet.png`（总览，1968×1932）。全部约 12 秒。
+- 整段预览 438 帧，`--jobs 2`（默认）约 4 分钟：每帧约 1 秒，每个进程约 1 GB 内存；`--fps 30` 帧数减半，`--clean` 去掉左上角的字。
 - 马来自 `../../horse-legs/gait_preview.py`，找不到 `out/horse-legs/pieces.json` 时先自动生成分件（约 5 秒）；鸭读 `../manifest.json`、`../pieces/`、`../eyes/`。
 - 中文字体规则同 `horse-upper/motion/preview.py`。
 
@@ -45,6 +52,20 @@ python assets/final-duck/motion/duckrig.py                # 自校验
 - 鸭的姿态都是开场片 `duckPose(T)` 的值（用 tsx 直接跑开场片取出，取整后写进 `KEYS`）；KF2 开场片是 determined 眼往下看（ly 0.95），换成最终形态的 xiakan 眼。
 - KF5 的座位 = 鞍座 + 开场片骑乘弹簧的偏移（−0.88 / −0.38 单位）；倾斜取开场片的 −4.48° 去掉旧马的身体俯仰 3.52°，再加新马这一刻的俯仰 2.36°。
 
+## 整段预览（`opening_preview.py`）
+
+| 项 | 做法 |
+| --- | --- |
+| 鸭 | 开场片 `characters/duckMotion.ts` 的 `duckPose` 逐行搬过来：站书堆读字 → 发现马 → 蹲下蓄力 → 跳下书堆 → 空中一顿 → 下落 → 落地回头 → 原地起跑 → 追马 → 蹲下起跳 → 飞跃上马 → 落到马鞍上 → 喊“出发！” → 跑出画面。开场片读自己马的两处（`seatWorld`、`bodyFrame().pitch`）改读新马，所以飞跃落在新马鞍上，骑乘弹簧和后仰跟着新马走 |
+| 马 | 同关键帧（`keyframes.horse_state`，预览时间 T − 1.9），另加开场片落鞍时的压背 7·ring(T − 4.9, 2.6, 6) 单位（`horseRig.ts` 的 `bodyFrame`）；座位 = 这一帧的鞍座最低点 `SEAT_C`。整段从故事时间 0（预览 −1.9 s）开始，步态相位往前外推的范围从 1 s 加到 2 s（`keyframes.PRE`） |
+| 镜头 | 开场片 `lib/story.tsx` 的 camX（跟着马走，上马后先冲出去再刹住）/ camY / camZ 推拉和手持漂移；震动、侧倾没做 |
+| 时间 | 开场片的变速：飞跃最高点（故事时间 4.766 s）前后慢放，最慢 0.3 倍，左上角显示倍率；故事时间 0–7.0 s = 视频 7.3 s = 438 帧 |
+| 分层 | 2.35 s 前（站在书堆上）鸭在马后；跳下书堆起在马前（切换这一帧两者不重叠）；4.83 s 起（往下落时右靴第一次碰到马，第 305 帧）按骑乘分成两半：右半在马后，左半在马前 |
+| 眼 | 同关键帧的换法；低头看马时（determined、ly ≥ 0.5）用 xiakan |
+| 阴影 | 开场片的两处鸭影：书堆顶上（跳下后 0.12 s 内淡出）、跑道上（跳下到落鞍），离地越高越小越淡 |
+
+- 和关键帧的差别：关键帧的骑乘弹簧用的是开场片旧马的数（KF5 偏移 −0.88 / −0.38 单位，倾斜 −5.64°）；整段预览里弹簧由新马驱动，同一时刻是 −0.81 / −1.44 单位、−5.82°。飞跃的终点也跟着新马鞍走，比旧马的落点左 1.0、低 1.8 单位。
+
 ## 做法
 
 - **身体**：箱体、帽子（烘在身体件里）、腰带、方巾、眼、嘴一起变换：缩放 `sx` / `sy`（坐下时宽度再 ×0.9，跨在马鞍上）→ 绕箱体底边中点倾斜 `rot` + 0.2×`head` → 放到世界锚点。没有单独的头，开场片的 `head` 换成这 0.2 倍的整体倾斜，外加眼睛 / 嘴每度往下滑 0.9 px；`lx`、`ly` 让眼睛移 14 / 10 px、嘴移 6 / 4 px。
@@ -60,10 +81,13 @@ python assets/final-duck/motion/duckrig.py                # 自校验
 
 `python duckrig.py`：静止姿态按 1:1 渲染，和 `../duck-final-1856x1280.png` 比，透明度 IoU 0.9994，平均色差 1.97/255（缩放重采样所致）；骑乘的前后两半叠回去和整只比，只有 246 px 透明度差超过 0.05，全在分界线两侧 x 923–954 的重叠带里。
 
+`python opening_preview.py --check dump.json`：把移植的 `duckPose` 接回开场片自己的旧马（`seatWorld`、`bodyFrame().pitch` 也一并移植），在 0–7.6 s 每 1/240 s 取一个姿态，共 1825 个，和开场片源码跑出来的数值比：所有数值字段最大误差 1.4e-14，腿型和眼态 0 处不同，座位、俯仰、马的 x 一致；镜头（630 帧的故事时间、camX / camY / camZ、手持漂移）最大误差 1.5e-11。
+
 ## 已知差异
 
 - 没有背景和特效：天空、远山、标题字、灰尘、速度线、落地冲击线、羽毛、上马时的光圈都没画；书堆是平面占位。
-- 镜头只用了 camX / camY；开场片的推拉（这五帧在 ±1.6% 内）、手持晃动（约 7 px）、震动和侧倾没做。
+- 关键帧的镜头只用了 camX / camY；开场片的推拉（这五帧在 ±1.6% 内）、手持晃动（约 7 px）、震动和侧倾没做。整段预览加上了推拉和手持晃动，震动和侧倾仍然没做。
+- 开场片 `duckPose` 里属于特效的四项没画：翅膀残影（`flap`）、轮转模糊（`spin`）、晕星（`stars`）、汗（`sweat`）。
 - 开场片里鸭子一直画在马前面（`front: true`）；这里站在书堆上时画在马后面：书堆在马的行进路线后面，新马的耳朵又比旧马高，KF2 里马耳会挡到鸭的右靴。
 - 马的步幅按马在世界里前进的比例换算（1 单位 = 5.70 px，见 `horse-legs` README），连成视频时着地的蹄不打滑；新马腿短，着地腿最多要拉长 15%（开场片 9%）。
 - 帽子烘在身体件里，没有单独的头部转动，`head` 只能换成整体倾斜 + 五官下滑。

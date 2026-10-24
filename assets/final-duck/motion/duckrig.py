@@ -315,11 +315,11 @@ class Duck:
     def small(self, key, sw, sh):
         k = (key, sw, sh)
         if k not in self._small:
+            if len(self._small) >= 400:        # bounded: a moving camera / squash makes new sizes every frame
+                self._small.clear()
             s = self.src(key)
             interp = cv2.INTER_AREA if sw < s.shape[1] else cv2.INTER_CUBIC
             self._small[k] = np.clip(cv2.resize(s, (sw, sh), interpolation=interp), 0, 1)
-            if len(self._small) > 400:
-                self._small.clear()
         return self._small[k]
 
     def elements(self, p):
