@@ -38,6 +38,7 @@ W, H = PV.W, PV.H
 SET = dict(pivot=LT.PIVOT, style='ink')
 SW = {}
 PRE = 2.0  # s of run-in before T = 0 (the opening starts the lamp at rest under a walking horse)
+JOLT_UNIT = 3.5  # canvas px per opening unit for the pivot's bob / pitch: the swing was tuned at this scale
 
 
 def body(T):
@@ -47,9 +48,10 @@ def body(T):
 
 
 def pivot_units(T):
-    """World pivot in opening units: the horse runs forward by the ground scroll (canvas px / GT.UNIT)."""
+    """World pivot in opening units: the horse runs forward by the ground scroll (canvas px / GT.UNIT, i.e. the
+    opening's horse speed), the pivot's bob / pitch counts at JOLT_UNIT."""
     q = body(T) @ np.array([SET['pivot'][0], SET['pivot'][1], 1.0])
-    return (GP.GAIT.scroll(T) + q[0]) / GT.UNIT, q[1] / GT.UNIT
+    return GP.GAIT.scroll(T) / GT.UNIT + q[0] / JOLT_UNIT, q[1] / JOLT_UNIT
 
 
 def setup(pivot=None, style=None):

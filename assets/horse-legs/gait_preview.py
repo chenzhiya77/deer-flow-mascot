@@ -185,7 +185,7 @@ def render_view(view, st, tail=True):
 GROUND_LINE = np.array([186, 176, 162], np.float32) / 255
 GROUND_MARK = np.array([206, 197, 185], np.float32) / 255
 GROUND_FILL = np.array([238, 234, 227], np.float32) / 255
-MARK_GAP = 230.0  # canvas px between ground marks
+MARK_GAP = 800.0  # canvas px between ground marks: well over twice a gallop frame's scroll (266 px at 30 fps)
 
 
 def hashf(n, salt):

@@ -2,12 +2,14 @@
 
 Conventions as in compose.py: 2048-canvas px, y down, angles in degrees clockwise from straight down.
 World = the canvas frame with the ground at gen.GROUND; the body (shoulders / hips) moves with bob and
-pitch, the ground scrolls back under it at the horse's speed.
+pitch, the ground scrolls back under it at the horse's speed. Stride and ground scroll use the opening's
+world scale (UNIT: 1 opening unit = 5.70 px), so with the opening's cadence a planted hoof keeps pace with
+the horse's speed in the opening; the short legs reach the longer stride by stretching up to 15 %.
 
 Every leg runs the same cycle, shifted by its phase offset. Stance (p < beta): the hoof is planted and
 moves back with the ground. Swing: the hoof travels forward along an eased path, lifted by
 sin(pi u^0.8) and curled back (front 78 deg, hind 48 deg, relative to the lower leg). A two-bone IK
-with a little stretch puts shoulder / hip -> knee / hock -> fetlock on the target. Where the
+with stretch puts shoulder / hip -> knee / hock -> fetlock on the target. Where the
 stretched leg is still too short in stance, the hoof rolls over its toe (breakover, body ahead of the
 hoof) or its heel (heel strike, body behind) instead of leaving the ground, and in swing the hoof is
 kept above the ground. A planted hoof is locked to the scrolling ground (see Gait), so it never skates,
@@ -26,10 +28,12 @@ GAIT = dict(
     walk=dict(S=140.0, beta=0.62, lift=34.0, off=dict(LH=0.0, LF=0.25, RH=0.5, RF=0.75)),
     gallop=dict(S=150.0, beta=0.32, lift=58.0, off=dict(LH=0.0, LF=0.45, RH=0.12, RF=0.57)),
 )
-UNIT = 3.5           # canvas px per opening unit for stride and lift
+UNIT = 1579 / 277    # canvas px per opening unit for stride and ground scroll: the opening's world scale
+                     # (saddle height 1579 px / the opening's seat height 277 units), 5.70
+LIFT_UNIT = 3.5      # canvas px per opening unit for the swing lift
 BOB_UNIT = 4.0       # canvas px per opening unit for the body bob (neck/mane preview: 5.8, no legs there)
 CURL = dict(front=78.0, hind=48.0)  # swing hoof curl (deg)
-STRETCH = 1.04       # max IK stretch of upper + lower (opening: 1.09 on its thin legs)
+STRETCH = 1.15       # max IK stretch of upper + lower: the opening's stride on short legs (opening: 1.09)
 ROLL_MAX = 32.0      # max toe / heel roll in stance (deg)
 NEUTRAL = dict(LF=30.0, RF=30.0, LH=-60.0, RH=-60.0)  # mid-stance hoof x relative to the root (px)
 ORDER = ('RH', 'RF', 'LH', 'LF')
@@ -159,7 +163,7 @@ class Gait:
             return dict(stance=True, x0=ref - self._samp(self.X, t), S=S, beta=beta, p=p)
         u = (p - beta) / (1 - beta)
         xn = DIMS[key]['root'][0] + NEUTRAL[key]
-        lift = lerp(GAIT['walk']['lift'], GAIT['gallop']['lift'], g) * UNIT * math.sin(math.pi * u ** 0.8)
+        lift = lerp(GAIT['walk']['lift'], GAIT['gallop']['lift'], g) * LIFT_UNIT * math.sin(math.pi * u ** 0.8)
         return dict(stance=False, u=u, x_lo=ref, x_td=xn + S / 2, lift=lift, S=S, beta=beta, p=p)
 
 
